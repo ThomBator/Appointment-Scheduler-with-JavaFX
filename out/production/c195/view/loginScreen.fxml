@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.loginScreenController">
+   <children>
+      <VBox alignment="CENTER" layoutX="166.0" prefHeight="800.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="BOTTOM_CENTER" prefHeight="68.0" prefWidth="283.0">
+               <children>
+                  <Label prefHeight="30.0" prefWidth="278.0" text="Appointment Scheduling System">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font></Label>
+               </children>
+               <opaqueInsets>
+                  <Insets top="5.0" />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="TOP_CENTER" prefHeight="22.0" prefWidth="600.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="193.0" text="Please Enter Your Login Information:" />
+               </children></HBox>
+            <HBox alignment="TOP_CENTER" prefHeight="181.0" prefWidth="600.0">
+               <children>
+                  <GridPane prefHeight="115.0" prefWidth="200.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="67.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="146.0" minWidth="10.0" prefWidth="133.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="113.0" minHeight="10.0" prefHeight="86.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="94.0" minHeight="10.0" prefHeight="76.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="Username: " />
+                        <Label text="Password:" GridPane.rowIndex="1" />
+                        <PasswordField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField GridPane.columnIndex="1" />
+                     </children>
+                     <padding>
+                        <Insets bottom="25.0" top="25.0" />
+                     </padding>
+                  </GridPane>
+               </children>
+            </HBox>
+            <HBox alignment="TOP_CENTER" prefHeight="130.0" prefWidth="600.0">
+               <children>
+                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="202.0" text="Sign In">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets left="450.0" right="450.0" />
+   </padding>
+</AnchorPane>
