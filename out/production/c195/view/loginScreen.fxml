@@ -50,12 +50,15 @@
                   <Button fx:id="signInLabel" mnemonicParsing="false" onAction="#onSignIn" prefHeight="25.0" prefWidth="120.0" text="Sign In" />
                </children>
             </HBox>
-            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER_RIGHT" prefHeight="52.0" prefWidth="600.0">
                <children>
-                  <Label fx:id="localeLabel" prefHeight="17.0" prefWidth="65.0" text="Region">
+                  <Label fx:id="timeZoneLabel" prefHeight="17.0" prefWidth="364.0" text="Region">
                      <HBox.margin>
-                        <Insets right="300.0" />
+                        <Insets right="10.0" />
                      </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
                   </Label>
                   <Button fx:id="exitLabel" mnemonicParsing="false" onAction="#onExitProgram" text="Exit" />
                </children>

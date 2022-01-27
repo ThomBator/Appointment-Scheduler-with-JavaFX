@@ -8,20 +8,28 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.User;
 
+import java.util.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLInvalidAuthorizationSpecException;
-import java.sql.SQLOutput;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.sql.*;
+import java.time.Instant;
+import java.time.LocalDate;
 
 public class LoginScreenController implements Initializable {
-    Stage stage;
-    Parent scene;
+    private Stage stage;
+    private Parent scene;
+    private static List<User> loginList;
+    private static User currentUser;
+    //Tracks currently logged-in user to update database as needed.
+
+
+
 
 
     @FXML
@@ -49,37 +57,55 @@ public class LoginScreenController implements Initializable {
     private Label usernameLabel;
 
     @FXML
-    private Label localeLabel;
+    private Label timeZoneLabel;
+
+
 
     @FXML
     void onExitProgram(ActionEvent event) {
+        System.exit(0);
 
     }
 
     @FXML
-    void onSignIn(ActionEvent event) {
+    void onSignIn(ActionEvent event) throws IOException {
         try{
 
             if(usernameInput.getLength() == 0 || passwordInput.getLength() == 0) {
                throw new RuntimeException();
             }
             else {
-                String userName = usernameInput.getText().trim();
-                String password = passwordInput.getText().trim();
+                boolean validInput = false;
+                for(int i = 0; i < loginList.size(); i++) {
+
+                    User loginUser = loginList.get(i);
 
 
-                Connection conn = DBConnection.getConnection(userName, password);
-                if(conn.isValid(5)) {
-                    stage = (Stage)((Button)event.getSource()).getScene().getWindow();
-                    scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
-                    stage.setScene(new Scene(scene));
-                    stage.show();
+                    if(loginUser.getUserName().equals(usernameInput.getText()) &&
+                            loginUser.getPassword().equals(passwordInput.getText())) {
+                        updateLoginActivity(true);
+                        currentUser = loginUser;
+                        validInput = true;
+                        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+                        scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
+                        stage.setScene(new Scene(scene));
+                        stage.show();
+
+
+
+                    }
+
+
+
 
                 }
 
-                else {
-                   throw new RuntimeException();
+                if(!validInput) {
+                    throw new RuntimeException();
+
+
                 }
+
 
             }
 
@@ -102,10 +128,11 @@ public class LoginScreenController implements Initializable {
                 inputAlert.setContentText("Username or password was not entered or was invalid. Please enter a valid username and password.");
                 inputAlert.showAndWait();
             }
+            updateLoginActivity(false);
 
         }
 
-        catch (SQLException | IOException e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -115,11 +142,45 @@ public class LoginScreenController implements Initializable {
     }
 
 
+    public static void updateLoginActivity(boolean wasSuccessful)  {
+
+        try( FileWriter logUpdate = new FileWriter("login_activity.txt", true);
+             BufferedWriter logUpdateBuff = new BufferedWriter(logUpdate);
+             PrintWriter logUpdatePW = new PrintWriter(logUpdateBuff)) {
+            Timestamp loginAttempt = Timestamp.from(Instant.now());
+            String logEntry = "Login attempt at: "+ loginAttempt.toString() + "(UTC). Login Success: " + wasSuccessful;
+            logUpdatePW.println(logEntry);
+            System.out.println(logEntry);
+
+
+        }
+
+        catch (IOException e) {
+            System.out.println("File update failed. Invalid input.");
+        }
+
+
+
+
+
+    }
+
+    public static User  getCurrentUser() {
+        return currentUser;
+    }
+
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         String userLocale = Locale.getDefault().toString();
-        localeLabel.setText(userLocale);
+        String timezoneStr = TimeZone.getDefault().getDisplayName();
+
+
+            loginList = DAO.UserQuery.createUserList();
+
 
         if(Locale.getDefault().getLanguage().equals("fr")) {
             ResourceBundle frRb = ResourceBundle.getBundle("controller/rb");
@@ -128,7 +189,15 @@ public class LoginScreenController implements Initializable {
             signInLabel.setText(frRb.getString("signIn"));
             viewTitle.setText(frRb.getString("viewTitle"));
             signInInstructionsLabel.setText(frRb.getString("instructions"));
+            timeZoneLabel.setText(frRb.getString("timeZoneTitle") + timezoneStr);
         }
+        else {
+            timeZoneLabel.setText("Current Timezone: " + " " +timezoneStr);
+        }
+
+
+
+
 
     }
 }
