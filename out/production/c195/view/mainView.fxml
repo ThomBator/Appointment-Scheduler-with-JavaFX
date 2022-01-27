@@ -1,14 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.MainViewController"
-            prefHeight="400.0" prefWidth="600.0">
 
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainViewController">
+   <children>
+      <HBox prefHeight="800.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <VBox prefHeight="800.0" prefWidth="600.0">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="27.0" prefWidth="304.0" text="Appointment Management System">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="575.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="343.0" text="Current Customer List: ">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" />
+                           </padding>
+                        </Label>
+                        <TextField prefHeight="25.0" prefWidth="270.0" promptText="Search for customers by name or ID" />
+                     </children>
+                     <padding>
+                        <Insets left="5.0" right="5.0" />
+                     </padding>
+                  </HBox>
+                  <HBox prefHeight="374.0" prefWidth="500.0">
+                     <children>
+                        <TableView prefHeight="400.0" prefWidth="600.0">
+                          <columns>
+                            <TableColumn minWidth="5.0" prefWidth="39.0" text="ID" />
+                            <TableColumn prefWidth="82.0" text="Name" />
+                              <TableColumn prefWidth="73.0" text="Address" />
+                              <TableColumn prefWidth="66.0" text="Post Code" />
+                              <TableColumn prefWidth="62.0" text="Phone" />
+                              <TableColumn prefWidth="60.0" text="Creator" />
+                              <TableColumn minWidth="0.0" prefWidth="74.0" text="LastUpdate" />
+                              <TableColumn minWidth="0.0" prefWidth="66.0" text="Update By" />
+                              <TableColumn minWidth="7.0" prefWidth="77.0" text="Division" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                     <children>
+                        <Button mnemonicParsing="false" text="Add New Customer" />
+                        <Button mnemonicParsing="false" text="Update Customer Record" />
+                        <Button mnemonicParsing="false" text="Delete Customer Record" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="100.0" prefWidth="527.0" spacing="10.0">
+                           <children>
+                              <Label prefHeight="17.0" prefWidth="81.0" text="Instructions: ">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label text="Click Add New Customer for new customer record" />
+                              <Label text="Select an existing customer from the table, then click Update Customer Record to update." wrapText="true" />
+                              <Label text="Select a customer from the table, then click Delete Customer Record to delete" />
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets left="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="800.0" prefWidth="600.0">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button mnemonicParsing="false" text="Exit Program" />
+                     </children>
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="361.0" text="Current Appointments: ">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" />
+                           </padding>
+                        </Label>
+                        <TextField prefHeight="25.0" prefWidth="271.0" />
+                     </children>
+                     <padding>
+                        <Insets left="5.0" right="5.0" />
+                     </padding>
+                  </HBox>
+                  <HBox prefHeight="373.0" prefWidth="600.0">
+                     <children>
+                        <TableView prefHeight="373.0" prefWidth="600.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="C1" />
+                            <TableColumn prefWidth="75.0" text="C2" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="25.0" prefWidth="600.0" spacing="5.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="230.0" text="Toggle to View Current Week or Month:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <RadioButton mnemonicParsing="false" text="Week" />
+                        <RadioButton mnemonicParsing="false" text="Month" />
+                        <RadioButton mnemonicParsing="false" text="All" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="75.0" prefWidth="600.0" spacing="8.0">
+                     <children>
+                        <Button mnemonicParsing="false" text="Add New Appointment" />
+                        <Button mnemonicParsing="false" text="Update Appointment" />
+                        <Button mnemonicParsing="false" text="Delete Appointment" />
+                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="164.0" text="Appointment Reports" />
+                     </children>
+                     <padding>
+                        <Insets bottom="25.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="600.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
 </AnchorPane>
