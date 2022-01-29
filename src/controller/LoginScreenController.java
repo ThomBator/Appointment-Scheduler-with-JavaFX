@@ -179,7 +179,9 @@ public class LoginScreenController implements Initializable {
         String timezoneStr = TimeZone.getDefault().getDisplayName();
 
 
-            loginList = DAO.UserQuery.createUserList();
+
+            loginList = DAO.UserQuery.getDBUsers();
+
 
 
         if(Locale.getDefault().getLanguage().equals("fr")) {

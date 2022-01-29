@@ -13,49 +13,54 @@ import java.util.List;
 
 public class UserQuery {
 
-    public static List<User> createUserList()  {
-       try {
+    private static List<User> users = new ArrayList<>();
 
-           Connection conn = DBConnection.getConnection();
-           final String SELECTSTATEMENT = "SELECT * FROM users";
-           PreparedStatement preparedStatement = conn.prepareStatement(SELECTSTATEMENT);
-           preparedStatement.execute();
-           ResultSet result = preparedStatement.getResultSet();
-           List<User> users = new ArrayList<>();
-           while (result.next()) {
-               int userID = result.getInt("User_ID");
-               String userName = result.getString("User_Name");
-               String password = result.getString("Password");
-               Timestamp dateCreated = result.getTimestamp("Create_Date");
-               String createdBy = result.getString("Created_By");
-               Timestamp lastUpdate = result.getTimestamp("Last_Update");
-               String lastUpdatedBy = result.getString("Last_Updated_By");
+    public static List<User> getDBUsers() {
 
-               users.add(new User(userID, userName, password, dateCreated, createdBy, lastUpdate, lastUpdatedBy));
+        if(users.isEmpty()) {
 
-           }
+            try( Connection conn = DBConnection.getConnection();){
+
+                final String SELECTSTATEMENT = "SELECT * FROM users";
+                PreparedStatement preparedStatement = conn.prepareStatement(SELECTSTATEMENT);
+                preparedStatement.execute();
+                ResultSet result = preparedStatement.getResultSet();
+
+                while (result.next()) {
+                    int userID = result.getInt("User_ID");
+                    String userName = result.getString("User_Name");
+                    String password = result.getString("Password");
+                    Timestamp dateCreated = result.getTimestamp("Create_Date");
+                    String createdBy = result.getString("Created_By");
+                    Timestamp lastUpdate = result.getTimestamp("Last_Update");
+                    String lastUpdatedBy = result.getString("Last_Updated_By");
+
+                    users.add(new User(userID, userName, password, dateCreated, createdBy, lastUpdate, lastUpdatedBy));
+
+                }
+                preparedStatement.close();
+                result.close();
 
 
-           DBConnection.closeConnection();
-           for(User user: users){
-               System.out.println(user.toString());
 
-           }
+            }
+
+            catch(SQLException e){
+                System.out.println("Invalid statement. Please review your SQL input string.");
+
+            }
+
+
+
+
+
+
+        }
+
            return users;
-       }
-
-       catch(SQLException e) {
-           System.out.println("Select statement invalid. Please review.");
 
 
-
-           }
-
-       return null;
-
-
-
-       }
+    }
 
 
 
