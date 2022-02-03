@@ -1,7 +1,5 @@
 package model;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Appointment {
@@ -10,17 +8,17 @@ public class Appointment {
     private String description;
     private String location;
     private String type;
-    private Timestamp start;
-    private Timestamp end;
-    private Timestamp dateCreated;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private LocalDateTime dateCreated;
     private String createdBy;
-    private Timestamp lastUpdated;
+    private LocalDateTime lastUpdated;
     private String lastUpdatedBy;
     private int customerID;
     private int userID;
     private int contactID;
 
-    public Appointment(int appointmentID, String title, String description, String location, String type, Timestamp start, Timestamp end, Timestamp dateCreated, String createdBy, Timestamp lastUpdated, String lastUpdatedBy,int customerID, int userID, int contactID) {
+    public Appointment(int appointmentID, String title, String description, String location, String type, LocalDateTime start, LocalDateTime end, LocalDateTime dateCreated, String createdBy, LocalDateTime lastUpdated, String lastUpdatedBy, int customerID, int userID, int contactID) {
         this.appointmentID = appointmentID;
         this.title = title;
         this.description = description;
@@ -35,12 +33,16 @@ public class Appointment {
         this.customerID = customerID;
         this.userID = userID;
         this.contactID = contactID;
+
+
+
     }
+
 
     @Override
     public String toString() {
         return "Appointment{" +
-                "customerID=" + customerID +
+                "appointmentID=" + appointmentID +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", location='" + location + '\'' +
@@ -51,17 +53,18 @@ public class Appointment {
                 ", createdBy='" + createdBy + '\'' +
                 ", lastUpdated=" + lastUpdated +
                 ", lastUpdatedBy='" + lastUpdatedBy + '\'' +
+                ", customerID=" + customerID +
                 ", userID=" + userID +
                 ", contactID=" + contactID +
                 '}';
     }
 
-    public int getCustomerID() {
-        return customerID;
+    public int getAppointmentID() {
+        return appointmentID;
     }
 
-    public void setCustomerID(int customerID) {
-        this.customerID = customerID;
+    public void setAppointmentID(int appointmentID) {
+        this.appointmentID = appointmentID;
     }
 
     public String getTitle() {
@@ -96,27 +99,27 @@ public class Appointment {
         this.type = type;
     }
 
-    public Timestamp getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public void setStart(Timestamp start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
-    public Timestamp getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
-    public void setEnd(Timestamp end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
-    public Timestamp getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Timestamp dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -128,11 +131,11 @@ public class Appointment {
         this.createdBy = createdBy;
     }
 
-    public Timestamp getLastUpdated() {
+    public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(Timestamp lastUpdated) {
+    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
@@ -142,6 +145,14 @@ public class Appointment {
 
     public void setLastUpdatedBy(String lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public int getCustomerID() {
+        return customerID;
+    }
+
+    public void setCustomerID(int customerID) {
+        this.customerID = customerID;
     }
 
     public int getUserID() {

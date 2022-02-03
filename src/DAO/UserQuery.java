@@ -35,7 +35,7 @@ public class UserQuery {
                     Timestamp lastUpdate = result.getTimestamp("Last_Update");
                     String lastUpdatedBy = result.getString("Last_Updated_By");
 
-                    users.add(new User(userID, userName, password, dateCreated, createdBy, lastUpdate, lastUpdatedBy));
+                    users.add(new User(userID, userName, password, dateCreated.toLocalDateTime(), createdBy, lastUpdate.toLocalDateTime(), lastUpdatedBy));
 
                 }
                 preparedStatement.close();

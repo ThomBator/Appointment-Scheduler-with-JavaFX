@@ -1,6 +1,8 @@
 package model;
 
-import java.sql.Timestamp;
+import javafx.collections.ObservableList;
+
+import java.time.LocalDateTime;
 
 public class Customer {
     private int customerID;
@@ -8,13 +10,15 @@ public class Customer {
     private String address;
     private String postalCode;
     private String phoneNumber;
-    private Timestamp dateCreated;
+    private LocalDateTime dateCreated;
     private String createdBy;
-    private Timestamp lastUpdated;
+    private LocalDateTime lastUpdated;
     private String lastUpdatedBy;
     private int divisionId;
+    private String divisionName;
+    private String countryName;
 
-    public Customer(int customerID, String customerName, String address, String postalCode, String phoneNumber, Timestamp dateCreated, String createdBy, Timestamp lastUpdated, String lastUpdatedBy, int divisionId) {
+    public Customer(int customerID, String customerName, String address, String postalCode, String phoneNumber, LocalDateTime dateCreated, String createdBy, LocalDateTime lastUpdated, String lastUpdatedBy, int divisionId) {
         this.customerID = customerID;
         this.customerName = customerName;
         this.address = address;
@@ -25,6 +29,8 @@ public class Customer {
         this.lastUpdated = lastUpdated;
         this.lastUpdatedBy = lastUpdatedBy;
         this.divisionId = divisionId;
+        setDivisionName(divisionId);
+        setCountryName(divisionId);
     }
 
     @Override
@@ -42,6 +48,8 @@ public class Customer {
                 ", divisionId=" + divisionId +
                 '}';
     }
+
+
 
     public int getCustomerID() {
         return customerID;
@@ -83,11 +91,11 @@ public class Customer {
         this.phoneNumber = phoneNumber;
     }
 
-    public Timestamp getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Timestamp dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -99,11 +107,11 @@ public class Customer {
         this.createdBy = createdBy;
     }
 
-    public Timestamp getLastUpdated() {
+    public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(Timestamp lastUpdated) {
+    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
@@ -122,4 +130,49 @@ public class Customer {
     public void setDivisionId(int divisionId) {
         this.divisionId = divisionId;
     }
+
+    public String getDivisionName() {
+        return divisionName;
+    }
+
+    public void setDivisionName(int parameterDivisionID) {
+        ObservableList<FirstLevelDivision> divisions = DAO.FirstLevelDivisionQuery.getFirstLevelDivisions();
+        for(int i = 0; i < divisions.size(); i++) {
+            FirstLevelDivision division =  divisions.get(i);
+            if( parameterDivisionID == division.getDivisionID()) {
+                this.divisionName = division.getDivisionName();
+                break;
+            }
+        }
+
+
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(int parameterDivisionID) {
+        ObservableList<FirstLevelDivision> divisions = DAO.FirstLevelDivisionQuery.getFirstLevelDivisions();
+        ObservableList<Country> countries = DAO.CountryQuery.getDBCountries();
+        int countryIDMatch = -1;
+        for(FirstLevelDivision division : divisions) {
+
+            if (parameterDivisionID == division.getDivisionID()) {
+                countryIDMatch = division.getCountryID();
+                break;
+            }
+
+        }
+
+        for (Country country : countries) {
+            if(countryIDMatch == country.getCountryID()) {
+                countryName = country.getCountryName();
+                break;
+            }
+        }
+
+    }
+
+
 }

@@ -1,22 +1,21 @@
 package model;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class User {
     private int userID;
     private String userName;
     private String password;
-    private Timestamp dateCreated;
+    private LocalDateTime dateCreated;
     private String createdBy;
-    private Timestamp lastUpdated;
+    private LocalDateTime lastUpdated;
     private String lastUpdatedBy;
 
 
     public User() {
     }
 
-    public User(int userID, String userName, String password, Timestamp dateCreated, String createdBy, Timestamp lastUpdated, String lastUpdatedBy) {
+    public User(int userID, String userName, String password, LocalDateTime dateCreated, String createdBy, LocalDateTime lastUpdated, String lastUpdatedBy) {
         this.userID = userID;
         this.userName = userName;
         this.password = password;
@@ -62,11 +61,11 @@ public class User {
         this.password = password;
     }
 
-    public Timestamp getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Timestamp dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -78,11 +77,11 @@ public class User {
         this.createdBy = createdBy;
     }
 
-    public Timestamp getLastUpdated() {
+    public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(Timestamp lastUpdated) {
+    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 

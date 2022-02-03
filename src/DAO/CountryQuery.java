@@ -21,7 +21,7 @@ public class CountryQuery {
                 preparedStatement.execute();
                 ResultSet resultSet = preparedStatement.getResultSet();
 
-                int index = 0;
+
 
                 while (resultSet.next()) {
                     int countryID = resultSet.getInt("Country_ID");
@@ -30,8 +30,8 @@ public class CountryQuery {
                     String createdBy = resultSet.getString("Created_By");
                     Timestamp lastUpdated = resultSet.getTimestamp("Last_Update");
                     String lastUpdatedBy = resultSet.getString("Last_Updated_By");
-                    countries.add(new Country(countryID, countryName, dateCreated, createdBy, lastUpdated, lastUpdatedBy));
-                    System.out.println(countries.get(index++).toString());
+                    countries.add(new Country(countryID, countryName, dateCreated.toLocalDateTime(), createdBy, lastUpdated.toLocalDateTime(), lastUpdatedBy));
+
 
                 }
 

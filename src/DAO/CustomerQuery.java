@@ -30,7 +30,8 @@ public class CustomerQuery {
                     Timestamp lastUpdate = result.getTimestamp("Last_Update");
                     String lastUpdatedBy = result.getString("Last_Updated_By");
                     int divisionID = result.getInt("Division_Id");
-                    customers.add(new Customer(customerID, customerName, address, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdatedBy, divisionID));
+                    customers.add(new Customer(customerID, customerName, address, postalCode, phone, createDate.toLocalDateTime(), createdBy, lastUpdate.toLocalDateTime(), lastUpdatedBy, divisionID));
+
 
 
                 }

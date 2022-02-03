@@ -1,18 +1,16 @@
 package model;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Country {
     private int countryID;
     private String countryName;
-    private Timestamp dateCreated;
+    private LocalDateTime dateCreated;
     private String createdBy;
-    private Timestamp lastUpdate;
+    private LocalDateTime lastUpdate;
     private String lastUpdateBy;
 
-    public Country(int countryID, String countryName, Timestamp dateCreated, String createdBy, Timestamp lastUpdate, String lastUpdateBy) {
+    public Country(int countryID, String countryName, LocalDateTime dateCreated, String createdBy, LocalDateTime lastUpdate, String lastUpdateBy) {
         this.countryID = countryID;
         this.countryName = countryName;
         this.dateCreated = dateCreated;
@@ -49,11 +47,11 @@ public class Country {
         this.countryName = countryName;
     }
 
-    public Timestamp getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Timestamp dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -65,11 +63,11 @@ public class Country {
         this.createdBy = createdBy;
     }
 
-    public Timestamp getLastUpdate() {
+    public LocalDateTime getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLastUpdate(Timestamp lastUpdate) {
+    public void setLastUpdate(LocalDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 

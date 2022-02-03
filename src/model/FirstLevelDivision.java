@@ -1,23 +1,24 @@
 package model;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class FirstLevelDivision {
     private int divisionID;
     private String divisionName;
-    private Timestamp dateCreated;
+    private LocalDateTime dateCreated;
     private String createdBy;
-    private Timestamp lastUpdated;
+    private LocalDateTime lastUpdated;
     private String lastUpdatedBy;
+    private int countryID;
 
-    public FirstLevelDivision(int divisionID, String divisionName, Timestamp dateCreated, String createdBy, Timestamp lastUpdated, String lastUpdatedBy) {
+    public FirstLevelDivision(int divisionID, String divisionName, LocalDateTime dateCreated, String createdBy, LocalDateTime lastUpdated, String lastUpdatedBy, int countryID) {
         this.divisionID = divisionID;
         this.divisionName = divisionName;
         this.dateCreated = dateCreated;
         this.createdBy = createdBy;
         this.lastUpdated = lastUpdated;
         this.lastUpdatedBy = lastUpdatedBy;
+        this.countryID = countryID;
     }
 
     @Override
@@ -48,11 +49,11 @@ public class FirstLevelDivision {
         this.divisionName = divisionName;
     }
 
-    public Timestamp getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Timestamp dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -60,15 +61,23 @@ public class FirstLevelDivision {
         return createdBy;
     }
 
+    public int getCountryID() {
+        return countryID;
+    }
+
+    public void setCountryID(int countryID) {
+        this.countryID = countryID;
+    }
+
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Timestamp getLastUpdated() {
+    public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(Timestamp lastUpdated) {
+    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 

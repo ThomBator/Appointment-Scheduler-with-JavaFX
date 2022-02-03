@@ -1,5 +1,6 @@
 package controller;
 
+import DAO.FirstLevelDivisionQuery;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,12 +14,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Appointment;
 import model.Country;
 import model.Customer;
-
+import DAO.*;
 import java.net.IDN;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.PropertyPermission;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
@@ -60,8 +62,13 @@ public class MainViewController implements Initializable {
     @FXML
     private TableColumn<Appointment, Integer> aptUserIDCol;
 
+
     @FXML
-    private TableColumn<Customer, String> custCreatorCol;
+    private TableColumn<Customer, String> custCountryNameCol;
+
+
+
+
 
     @FXML
     private TableColumn<Customer, String> custDivCol;
@@ -69,8 +76,7 @@ public class MainViewController implements Initializable {
     @FXML
     private TableColumn<Customer, Integer> custIDCol;
 
-    @FXML
-    private TableColumn<Customer, Timestamp> custLastUpdateCol;
+
 
     @FXML
     private TableColumn<Customer, String> custNameCol;
@@ -81,8 +87,7 @@ public class MainViewController implements Initializable {
     @FXML
     private TableColumn<Customer, String> custPostCol;
 
-    @FXML
-    private TableColumn<Customer, String> custUpdateByCol;
+
 
     @FXML
     private TableColumn<Customer, String> custAddressCol;
@@ -138,6 +143,11 @@ public class MainViewController implements Initializable {
     @FXML
     void onSelectAllRadio(ActionEvent event) {
 
+
+
+
+
+
     }
 
     @FXML
@@ -170,22 +180,42 @@ public class MainViewController implements Initializable {
 
     }
 
+    //NEEDED: Write method to check for appointments within 15 minutes of login and send an alert if needed.
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        appointmentTable.setItems(AppointmentQuery.getAppointments());
+        aptAptIDCol.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+        aptTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        aptDescriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        aptLocationCol.setCellValueFactory(new PropertyValueFactory<>("location"));
+        aptTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+        aptStartCol.setCellValueFactory(new PropertyValueFactory<>("start"));
+        aptEndCol.setCellValueFactory(new PropertyValueFactory<>("end"));
+        aptCustIDCol.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        aptUserIDCol.setCellValueFactory(new PropertyValueFactory<>("userID"));
 
-            customerTable.setItems(DAO.CustomerQuery.getCustomers());
-            custIDCol.setCellValueFactory(new PropertyValueFactory<>("customerID"));
-            custNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
-            custAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
-            custPostCol.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
-            custPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-            custCreatorCol.setCellValueFactory(new PropertyValueFactory<>("createdBy"));
-            custLastUpdateCol.setCellValueFactory(new PropertyValueFactory<>("lastUpdated"));
-            custUpdateByCol.setCellValueFactory(new PropertyValueFactory<>("lastUpdatedBy"));
-            custDivCol.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
+        //Need to create lookup function that grabs contact name based on contact ID
+        aptContactCol.setCellValueFactory(new PropertyValueFactory<>("contactID"));
 
-            //I think I need all my times to be grabbed from DB as timestamp and set to DB as timestamp but live on in the model classes as LocalDateTime to get things working as described.
+        customerTable.setItems(CustomerQuery.getCustomers());
+        custIDCol.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        custNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+        custAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        custPostCol.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
+        custPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+
+
+        custCountryNameCol.setCellValueFactory(new PropertyValueFactory<>("countryName"));
+        custDivCol.setCellValueFactory(new PropertyValueFactory<>("divisionName"));
+
+
+
+
+
+
+
 
 
 

@@ -17,6 +17,7 @@ public class AppointmentQuery {
                 PreparedStatement preparedStatement = conn.prepareStatement(selectStatement);
                 preparedStatement.execute();
                 ResultSet result = preparedStatement.getResultSet();
+                int index = 0;
 
                 while(result.next()) {
                     int appointmentID = result.getInt("Appointment_ID");
@@ -34,8 +35,8 @@ public class AppointmentQuery {
                     int userID = result.getInt("User_ID");
                     int contactID = result.getInt("Contact_ID");
 
-                    appointments.add(new Appointment(appointmentID, title, description, location, type, start, end, dateCreated, createdBy, lastUpdate, lastUpdatedBy, customerID, userID, contactID));
-
+                    appointments.add(new Appointment(appointmentID, title, description, location, type, start.toLocalDateTime(), end.toLocalDateTime(), dateCreated.toLocalDateTime(), createdBy, lastUpdate.toLocalDateTime(), lastUpdatedBy, customerID, userID, contactID));
+                    System.out.println(appointments.get(index++).toString());
 
 
 
