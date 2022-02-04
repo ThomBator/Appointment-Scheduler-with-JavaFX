@@ -23,14 +23,7 @@ public class FirstLevelDivision {
 
     @Override
     public String toString() {
-        return "FirstLevelDivision{" +
-                "divisionID=" + divisionID +
-                ", divisionName='" + divisionName + '\'' +
-                ", dateCreated=" + dateCreated +
-                ", createdBy='" + createdBy + '\'' +
-                ", lastUpdated=" + lastUpdated +
-                ", lastUpdatedBy='" + lastUpdatedBy + '\'' +
-                '}';
+        return divisionName;
     }
 
     public int getDivisionID() {

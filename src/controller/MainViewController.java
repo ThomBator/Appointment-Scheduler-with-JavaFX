@@ -4,17 +4,19 @@ import DAO.FirstLevelDivisionQuery;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import model.Appointment;
 import model.Country;
 import model.Customer;
 import DAO.*;
+
+import java.io.IOException;
 import java.net.IDN;
 import java.net.URL;
 import java.sql.SQLException;
@@ -24,6 +26,8 @@ import java.util.PropertyPermission;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
+    Stage stage;
+    Parent scene;
     private static ObservableList<Country> countriesList;
 
     @FXML
@@ -116,7 +120,11 @@ public class MainViewController implements Initializable {
     }
 
     @FXML
-    void onAddNewCustomer(ActionEvent event) {
+    void onAddNewCustomer(ActionEvent event) throws IOException {
+        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+        scene = FXMLLoader.load(getClass().getResource("/view/AddModifyCustomer.fxml"));
+        stage.setScene(new Scene(scene));
+        stage.show();
 
     }
 

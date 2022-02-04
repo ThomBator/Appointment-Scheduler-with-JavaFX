@@ -21,14 +21,7 @@ public class Country {
 
     @Override
     public String toString() {
-        return "Country{" +
-                "countryID=" + countryID +
-                ", countryName='" + countryName + '\'' +
-                ", dateCreated=" + dateCreated +
-                ", createdBy='" + createdBy + '\'' +
-                ", lastUpdate=" + lastUpdate +
-                ", lastUpdateBy='" + lastUpdateBy + '\'' +
-                '}';
+        return countryName;
     }
 
     public int getCountryID() {
