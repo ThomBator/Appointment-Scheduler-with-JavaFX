@@ -10,6 +10,10 @@ public class Country {
     private LocalDateTime lastUpdate;
     private String lastUpdateBy;
 
+
+    public Country() {
+    }
+
     public Country(int countryID, String countryName, LocalDateTime dateCreated, String createdBy, LocalDateTime lastUpdate, String lastUpdateBy) {
         this.countryID = countryID;
         this.countryName = countryName;

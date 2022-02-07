@@ -36,7 +36,7 @@ public class AppointmentQuery {
                     int contactID = result.getInt("Contact_ID");
 
                     appointments.add(new Appointment(appointmentID, title, description, location, type, start.toLocalDateTime(), end.toLocalDateTime(), dateCreated.toLocalDateTime(), createdBy, lastUpdate.toLocalDateTime(), lastUpdatedBy, customerID, userID, contactID));
-                    System.out.println(appointments.get(index++).toString());
+
 
 
 

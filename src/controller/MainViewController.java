@@ -22,6 +22,8 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.PropertyPermission;
 import java.util.ResourceBundle;
 
@@ -29,6 +31,7 @@ public class MainViewController implements Initializable {
     Stage stage;
     Parent scene;
     private static ObservableList<Country> countriesList;
+    private static ObservableList<Customer>customersList;
 
     @FXML
     private RadioButton allRadio;
@@ -115,7 +118,12 @@ public class MainViewController implements Initializable {
     private RadioButton weekRadio;
 
     @FXML
-    void onAddNewAppointment(ActionEvent event) {
+    void onAddNewAppointment(ActionEvent event) throws IOException {
+        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+        scene = FXMLLoader.load(getClass().getResource("/view/AddModifyAppointment.fxml"));
+        stage.setScene(new Scene(scene));
+        stage.show();
+
 
     }
 
@@ -165,6 +173,7 @@ public class MainViewController implements Initializable {
 
     @FXML
     void onSelectExit(ActionEvent event) {
+        System.exit(0);
 
     }
 
@@ -185,10 +194,38 @@ public class MainViewController implements Initializable {
 
     @FXML
     void onUpdateCustomer(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/AddModifyCustomer.fxml"));
+            loader.load();
+            AddModifyCustomerController customerController = loader.getController();
+            Customer customer = customerTable.getSelectionModel().getSelectedItem();
+            customerController.modifyExistingCustomer(customer);
+            stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            stage.setScene(new Scene(scene));
+            stage.show();
+        }
+
+        catch(RuntimeException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("No Customer Selected");
+            alert.setContentText("You must select a customer from the customer table to update a customer record.");
+            alert.showAndWait();
+
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+
+        }
 
     }
 
+
+
+
     //NEEDED: Write method to check for appointments within 15 minutes of login and send an alert if needed.
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -206,17 +243,17 @@ public class MainViewController implements Initializable {
 
         //Need to create lookup function that grabs contact name based on contact ID
         aptContactCol.setCellValueFactory(new PropertyValueFactory<>("contactID"));
-
-        customerTable.setItems(CustomerQuery.getCustomers());
+        customersList = CustomerQuery.getCustomers();
+        customerTable.setItems(customersList);
         custIDCol.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         custNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         custAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
         custPostCol.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
         custPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-
-
         custCountryNameCol.setCellValueFactory(new PropertyValueFactory<>("countryName"));
         custDivCol.setCellValueFactory(new PropertyValueFactory<>("divisionName"));
+
+
 
 
 

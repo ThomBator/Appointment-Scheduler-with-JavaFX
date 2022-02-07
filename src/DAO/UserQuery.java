@@ -1,5 +1,7 @@
 package DAO;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import model.User;
 
 import java.io.InputStream;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class UserQuery {
 
-    private static List<User> users = new ArrayList<>();
+    private static ObservableList<User> users = FXCollections.observableArrayList();
 
     public static List<User> getDBUsers() {
 

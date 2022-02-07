@@ -14,7 +14,7 @@ public class CustomerQuery {
 
     public static  ObservableList<Customer> getCustomers() {
 
-        if(customers.isEmpty()) {
+
             try( Connection conn = DBConnection.getConnection()){
 
                 String selectStatement = "SELECT * FROM customers";
@@ -39,9 +39,7 @@ public class CustomerQuery {
 
                 }
 
-                for(Customer customer: customers) {
-                    System.out.println(customer.toString());
-                }
+
                 result.close();
                 preparedStatement.close();
             }
@@ -57,7 +55,7 @@ public class CustomerQuery {
 
 
 
-        }
+
 
         return customers;
 
@@ -83,15 +81,46 @@ public class CustomerQuery {
             preparedStatement.execute();
             preparedStatement.close();
 
+
         }
         catch(SQLException e) {
             e.printStackTrace();
 
         }
 
-        return "New User Successfully Added";
+        return "New Customer Successfully Added";
 
 
     }
+
+    public static String updateCustomer (int customerID, String name, String address, String phoneNumber, String postalCode, int divisionID) {
+
+     try(Connection conn = DBConnection.getConnection()) {
+         Timestamp timestamp = Timestamp.from(Instant.now());
+         String updateStatement = "UPDATE customers SET Customer_Name = ?, Address = ?, Postal_Code = ?, Phone = ?, Last_Update = ?, Last_Updated_By = ?, Division_ID = ? WHERE Customer_ID = ?";
+         PreparedStatement preparedStatement = conn.prepareStatement(updateStatement);
+         preparedStatement.setString(1, name);
+         preparedStatement.setString(2, address);
+         preparedStatement.setString(3, postalCode);
+         preparedStatement.setString(4, phoneNumber);
+         preparedStatement.setTimestamp(5, timestamp);
+         preparedStatement.setString(6, currentUser.getUserName());
+         preparedStatement.setInt(7, divisionID);
+         preparedStatement.setInt(8, customerID);
+
+         preparedStatement.execute();
+         preparedStatement.close();
+         DBConnection.closeConnection();
+
+
+     }
+     catch(SQLException e) {
+         e.printStackTrace();
+     }
+        return "Customer Info Updated Successfully";
+
+
+    }
+
 
 }
