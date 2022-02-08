@@ -17,7 +17,7 @@ public class UserQuery {
 
     private static ObservableList<User> users = FXCollections.observableArrayList();
 
-    public static List<User> getDBUsers() {
+    public static ObservableList<User> getDBUsers() {
 
         if(users.isEmpty()) {
 

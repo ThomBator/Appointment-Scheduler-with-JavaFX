@@ -5,13 +5,15 @@ import javafx.collections.ObservableList;
 import model.Appointment;
 
 import java.sql.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class AppointmentQuery {
     private static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
 
     public static ObservableList<Appointment> getAppointments() {
 
-        if(appointments.isEmpty()) {
+
             try(Connection conn = DBConnection.getConnection()){
                 String selectStatement = "SELECT * from appointments";
                 PreparedStatement preparedStatement = conn.prepareStatement(selectStatement);
@@ -58,10 +60,37 @@ public class AppointmentQuery {
             }
 
 
-        }
+
 
         return appointments;
     }
+
+    public static String addAppointment(String title, String description, String location, int contactID, int userID, int customerID, String type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        try(Connection conn = DBConnection.getConnection()) {
+            String insertStatement = "INSERT INTO appointments(Appointment_ID, Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID" +
+                    " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            Timestamp timestamp = Timestamp.from(Instant.now());
+            PreparedStatement preparedStatement = conn.prepareStatement(insertStatement);
+            preparedStatement.setInt(1, 0);
+            preparedStatement.setString(2, title);
+            preparedStatement.setString(3,description);
+            preparedStatement.setString(4, location);
+            preparedStatement.setString(5, type);
+            //figure out time conversion from localdate time to timestamp UTC.
+
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        return  "Appointment Added Successfully";
+
+
+
+    }
+
+
 
 
 }

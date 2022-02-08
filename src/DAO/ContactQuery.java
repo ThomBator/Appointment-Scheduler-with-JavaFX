@@ -11,7 +11,7 @@ import java.util.List;
 public class ContactQuery {
     private static ObservableList<Contact> contacts = FXCollections.observableArrayList();
 
-    public static List<Contact> getDBContacts() {
+    public static ObservableList<Contact> getDBContacts() {
 
         if (contacts.isEmpty()) {
 

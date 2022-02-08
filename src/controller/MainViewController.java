@@ -188,7 +188,31 @@ public class MainViewController implements Initializable {
     }
 
     @FXML
-    void onUpdateAppointment(ActionEvent event) {
+    void onUpdateAppointment(ActionEvent event) { try {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/view/AddModifyAppointment.fxml"));
+        loader.load();
+        AddModifyAppointmentController addModifyAppointmentController = loader.getController();
+       Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+        addModifyAppointmentController.modifyExistingAppointment(appointment);
+        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+        scene = loader.getRoot();
+        stage.setScene(new Scene(scene));
+        stage.show();
+    }
+
+    catch(RuntimeException e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("No Appointment Selected");
+        alert.setContentText("You must select an appointment from the appointment table to update an appointment record.");
+        alert.showAndWait();
+
+    }
+    catch (IOException e) {
+        e.printStackTrace();
+
+    }
+
 
     }
 
@@ -222,7 +246,22 @@ public class MainViewController implements Initializable {
     }
 
 
+    public void returnToMain(ActionEvent event) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Changes Not Saved");
+        alert.setContentText("All unsaved changes will be lost and you will be returned to the Main dashboard. Press OK to continue.");
+        Optional<ButtonType> result = alert.showAndWait();
 
+        if(result.isPresent() && result.get() == ButtonType.OK) {
+
+            stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+            scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
+            stage.setScene(new Scene(scene));
+            stage.show();
+
+        }
+
+    }
 
     //NEEDED: Write method to check for appointments within 15 minutes of login and send an alert if needed.
 

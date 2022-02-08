@@ -18,6 +18,7 @@ import model.FirstLevelDivision;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.InputMismatchException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class AddModifyCustomerController implements Initializable {
     Stage stage;
     Parent scene;
-    private Country selectedCountry;
+    private static Country selectedCountry;
     private static boolean setToModify = false;
     private static int modID;
     private static ObservableList<Country> countries;
@@ -62,19 +63,11 @@ public class AddModifyCustomerController implements Initializable {
 
     @FXML
     void onActionCancel(ActionEvent event) throws IOException {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Changes Not Saved");
-        alert.setContentText("All unsaved changes will be lost, are you sure you want to cancel?");
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if(result.isPresent() && result.get() == ButtonType.OK) {
-
-            stage = (Stage)((Button)event.getSource()).getScene().getWindow();
-            scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
-            stage.setScene(new Scene(scene));
-            stage.show();
-
-        }
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/view/mainView.fxml"));
+        loader.load();
+        MainViewController mainViewController = loader.getController();
+        mainViewController.returnToMain(event);
 
 
 
@@ -92,6 +85,12 @@ public class AddModifyCustomerController implements Initializable {
             String phoneNumber = phoneNumberField.getText();
             int divisionID = firstLevelComboBox.getValue().getDivisionID();
             String success;
+            if(name.isEmpty()) throw new RuntimeException();
+            if(address.isEmpty()) throw new RuntimeException();
+            if(postalCode.isEmpty())throw new RuntimeException();
+            if(phoneNumber.isEmpty()) throw new RuntimeException();
+            if(firstLevelComboBox.getValue().getDivisionName().isEmpty()) throw new RuntimeException();
+
             if (setToModify == true) {
 
                 success = DAO.CustomerQuery.updateCustomer(modID, name, address, phoneNumber, postalCode, divisionID);
@@ -137,16 +136,23 @@ public class AddModifyCustomerController implements Initializable {
 
     }
 
+    public static FilteredList<FirstLevelDivision> setFirstLevel(Country country) {
+        FilteredList<FirstLevelDivision> countryDivisions =
+                DAO.FirstLevelDivisionQuery.getFirstLevelDivisions()
+                        .filtered(fl -> fl.getCountryID() == selectedCountry.getCountryID());
+        return countryDivisions;
+
+    }
+
     @FXML
     void onCountrySelected(ActionEvent event) {
 
         selectedCountry = countryComboBox.getValue();
-        FilteredList<FirstLevelDivision> countryDivisions =
-                DAO.FirstLevelDivisionQuery.getFirstLevelDivisions()
-                        .filtered(fl -> fl.getCountryID() == selectedCountry.getCountryID());
-        firstLevelComboBox.setItems(countryDivisions);
+
+        firstLevelComboBox.setItems(setFirstLevel(selectedCountry));
         firstLevelComboBox.setPromptText("Select a division");
         firstLevelComboBox.setVisibleRowCount(5);
+
 
 
 
@@ -168,10 +174,17 @@ public class AddModifyCustomerController implements Initializable {
         postalCodeField.setText(customer.getPostalCode());
         addModifyTitleLabel.setText("Update Customer Info");
         addModifyButton.setText("Update");
+
+
+
+
+
         for(Country country : countries) {
             if(country.getCountryName().equals(customer.getCountryName())) {
-                Country customerCountry = country;
-                countryComboBox.getSelectionModel().select(customerCountry);
+
+                countryComboBox.getSelectionModel().select(country);
+
+
                 break;
             }
 
@@ -180,10 +193,13 @@ public class AddModifyCustomerController implements Initializable {
         ObservableList<FirstLevelDivision> firstLevelDivisionsList = DAO.FirstLevelDivisionQuery.getFirstLevelDivisions();
         for(FirstLevelDivision firstLevelDivision : firstLevelDivisionsList) {
             if(firstLevelDivision.getDivisionName().equals(customer.getDivisionName())) {
-                FirstLevelDivision customerFirstLevelDivision = firstLevelDivision;
-                firstLevelComboBox.getSelectionModel().select(customerFirstLevelDivision);
+                firstLevelComboBox.getSelectionModel().select(firstLevelDivision);
                 break;
             }
+            selectedCountry = countryComboBox.getValue();
+            firstLevelComboBox.setItems(setFirstLevel(selectedCountry));
+            firstLevelComboBox.setPromptText("Select a division");
+            firstLevelComboBox.setVisibleRowCount(5);
         }
     }
 

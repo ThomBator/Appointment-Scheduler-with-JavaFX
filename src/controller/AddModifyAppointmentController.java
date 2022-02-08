@@ -4,19 +4,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
-import model.Contact;
-import model.Customer;
-import model.User;
-import java.time.Month;
+import model.*;
+
+import java.io.IOException;
+import java.time.*;
 import java.net.URL;
 import java.sql.Time;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +24,17 @@ import java.util.stream.IntStream;
 public class AddModifyAppointmentController implements Initializable {
     Stage stage;
     Parent scene;
+    private static ObservableList<Month> months = getMonths();
+    private static ObservableList<Contact> contacts = DAO.ContactQuery.getDBContacts();
+    private static ObservableList<User>  users = DAO.UserQuery.getDBUsers();
+    private static ObservableList<Customer> customers = DAO.CustomerQuery.getCustomers();
+    private static boolean setToModify = false;
+    private static int modAppointmentID;
+    private static ZoneId easternZone = ZoneId.of("America/New_York");
+    private static ZonedDateTime easternStart;
+    private static ZonedDateTime easternEnd;
+    private static LocalDateTime localStartTime;
+    private static LocalDateTime localEndTime;
 
 
     @FXML
@@ -83,11 +93,32 @@ public class AddModifyAppointmentController implements Initializable {
 
     @FXML
     void onAddUpdate(ActionEvent event) {
+        //Remember you need to check against eastern business hours, get Eastern start and end times and convert them to local time.
+        int startYear = startYearCombo.getValue();
+        Month startMonth = startMonthCombo.getValue();
+        int startDay = startDayCombo.getValue();
+        int startHour = startHourCombo.getValue();
+        int startMinute = startMinuteCombo.getValue();
+        localStartTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
+        easternStart = ZonedDateTime.of(localStartTime, easternZone);
+        if(easternStart.getHour() >= 8) {
+            System.out.println("Time Ok!");
+        }
+
+
+        //Write logic that start time must be before end time too!
+
 
     }
 
     @FXML
-    void onCancel(ActionEvent event) {
+    void onCancel(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/view/mainView.fxml"));
+        loader.load();
+        MainViewController mainViewController = loader.getController();
+        mainViewController.returnToMain(event);
+
 
     }
 
@@ -103,7 +134,22 @@ public class AddModifyAppointmentController implements Initializable {
        return month.length(leapYearCheck);
 
    }
-   //Problem: If you select month first and year second, the days box does not get triggered.
+
+    @FXML
+    void onSelectEndYear(ActionEvent event) {
+        endMonthCombo.setItems(months);
+
+
+    }
+
+
+    @FXML
+    void onSelectStartYear(ActionEvent event) {
+        startMonthCombo.setItems(months);
+
+
+    }
+
     @FXML
     void onSelectEndMonth(ActionEvent event) {
         try{
@@ -112,7 +158,7 @@ public class AddModifyAppointmentController implements Initializable {
             int endMonthLength = getDays(endMonth, endYear);
             ObservableList<Integer> endDays = numRangesForDates(1, endMonthLength + 1);
             endDayCombo.setItems(endDays);
-            endDayCombo.setPromptText("Day");
+
         }
         catch(RuntimeException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -123,7 +169,7 @@ public class AddModifyAppointmentController implements Initializable {
 
         }
 
-
+//Populate the month combo boxes only when the year is selected.
 
     @FXML void onSelectStartMonth(ActionEvent event) {
         Month startMonth = startMonthCombo.getValue();
@@ -131,7 +177,7 @@ public class AddModifyAppointmentController implements Initializable {
         int startMonthLength = getDays(startMonth, startYear);
         ObservableList<Integer> startDays = numRangesForDates(1, startMonthLength + 1);
         startDayCombo.setItems(startDays);
-        startDayCombo.setPromptText("Day");
+
 
     }
 
@@ -142,6 +188,49 @@ public class AddModifyAppointmentController implements Initializable {
     }
     public static ObservableList<Month> getMonths() {
         return Arrays.stream(Month.values()).collect(Collectors.toCollection(FXCollections::observableArrayList));
+    }
+
+    public void modifyExistingAppointment(Appointment appointment) {
+        setToModify = true;
+        modAppointmentID = appointment.getAppointmentID();
+        appointmentIDField.setText(String.valueOf(modAppointmentID));
+        titleField.setText(appointment.getTitle());
+        descriptionField.setText(appointment.getDescription());
+        locationField.setText(appointment.getLocation());
+        typeField.setText(appointment.getType());
+        LocalDateTime appointmentStartDate = appointment.getStart();
+        LocalDateTime appointmentEndDate = appointment.getEnd();
+        startYearCombo.getSelectionModel().select(appointmentStartDate.getYear());
+        startMonthCombo.getSelectionModel().select(appointmentStartDate.getMonth());
+        startDayCombo.getSelectionModel().select(appointmentStartDate.getDayOfMonth());
+        startHourCombo.getSelectionModel().select(appointmentStartDate.getHour());
+        startMinuteCombo.getSelectionModel().select(appointmentStartDate.getMinute());
+
+
+        endYearCombo.getSelectionModel().select(appointmentEndDate.getYear());
+        endMonthCombo.getSelectionModel().select(appointmentEndDate.getMonth());
+        endDayCombo.getSelectionModel().select(appointmentEndDate.getDayOfMonth());
+        endHourCombo.getSelectionModel().select(appointmentEndDate.getHour());
+        endMinuteCombo.getSelectionModel().select(appointmentEndDate.getMinute());
+
+        for(Contact contact : contacts) {
+            if(appointment.getContactID() == contact.getContactID()) {
+                contactCombo.getSelectionModel().select(contact);
+                break;
+            }
+        }
+        for(User user : users) {
+            if(appointment.getUserID() == user.getUserID()) {
+                userCombo.getSelectionModel().select(user);
+                break;
+            }
+        }
+        for(Customer customer : customers) {
+            if(appointment.getCustomerID() == customer.getCustomerID()) {
+                customerCombo.getSelectionModel().select(customer);
+            }
+        }
+
     }
 
     @Override
@@ -156,16 +245,25 @@ public class AddModifyAppointmentController implements Initializable {
         startHourCombo.setPromptText("Hour");
         endHourCombo.setItems(hours);
         endHourCombo.setPromptText("Hour");
-        ObservableList<Month> months = getMonths();
+
         ObservableList<Integer> minutes = numRangesForDates(0, 59);
         startMinuteCombo.setItems(minutes);
         startMinuteCombo.setPromptText("Minutes");
         endMinuteCombo.setItems(minutes);
         endMinuteCombo.setPromptText("Minutes");
-        startMonthCombo.setItems(months);
+        endDayCombo.setPromptText("Day");
+        startDayCombo.setPromptText("Day");
         startMonthCombo.setPromptText("Month");
-        endMonthCombo.setItems(months);
         endMonthCombo.setPromptText("Month");
+        contactCombo.setItems(contacts);
+        contactCombo.setPromptText("Contacts");
+        userCombo.setItems(users);
+        userCombo.setPromptText("Users");
+        customerCombo.setItems(customers);
+        customerCombo.setPromptText("Customers");
+
+
+
 
 
 
