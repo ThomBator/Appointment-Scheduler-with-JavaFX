@@ -14,11 +14,13 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import model.*;
 
+import javax.swing.text.DateFormatter;
 import java.io.IOException;
 import java.time.*;
 import java.net.URL;
 import java.sql.Time;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Filter;
@@ -35,6 +37,7 @@ public class AddModifyAppointmentController implements Initializable {
     private static ObservableList<Customer> customers = DAO.CustomerQuery.getCustomers();
     private static ObservableList<Integer> startDays = FXCollections.observableArrayList();
     private static  ObservableList<Integer> endDays = FXCollections.observableArrayList();
+    private static ObservableList<Appointment> allAppointments = AppointmentQuery.getAppointments();
     private static boolean setToModify = false;
     private static int modAppointmentID;
     private static ZoneId easternZone = ZoneId.of("America/New_York");
@@ -43,8 +46,12 @@ public class AddModifyAppointmentController implements Initializable {
     private static ZonedDateTime easternCloseTime = ZonedDateTime.of(2022, 1, 1, 22, 0, 0, 0, easternZone);
     private static ZonedDateTime zonedLocalOpenTime =  easternOpenTime.withZoneSameInstant(systemZone);
     private static ZonedDateTime zonedLocalCloseTime = easternCloseTime.withZoneSameInstant(systemZone);
-    private static LocalDateTime localOpenTime = zonedLocalOpenTime.toLocalDateTime();
-    private static LocalDateTime localCloseTime = zonedLocalCloseTime.toLocalDateTime();
+    private static LocalDateTime localOpenDate = zonedLocalOpenTime.toLocalDateTime();
+    private static LocalDateTime localCloseDate = zonedLocalCloseTime.toLocalDateTime();
+    private static LocalTime localOpenTime = localOpenDate.toLocalTime();
+    private static LocalTime localCloseTime = localCloseDate.toLocalTime();
+    private static String invalidInputMessage = "You must fill in all fields and make selections in all dropdown boxes. Please review your input before resubmitting.";
+
 
 
 
@@ -107,42 +114,169 @@ public class AddModifyAppointmentController implements Initializable {
     @FXML
     private ComboBox<User> userCombo;
 
+    private static void invalidDateAlert(String details) {
+        Alert invalidDate = new Alert(Alert.AlertType.ERROR);
+        invalidDate.setTitle("Invalid Date Entered");
+        invalidDate.setContentText(details);
+        invalidDate.showAndWait();
+    }
+
+
+
     @FXML
     void onAddUpdate(ActionEvent event) {
         //Remember you need to check against eastern business hours, get Eastern start and end times and convert them to local time.
         try{
 
-
+            //This section of the function extracts data from the form. If a field is empty, a runtime exception is thrown.
             String title = titleField.getText();
+            if(title.isEmpty()) throw new RuntimeException(invalidInputMessage);
             String description = descriptionField.getText();
+            if(description.isEmpty())throw new RuntimeException(invalidInputMessage);
             String location = locationField.getText();
+            if(location.isEmpty()) throw new RuntimeException(invalidInputMessage);
             String type = typeField.getText();
+            if(type.isEmpty()) throw new RuntimeException(invalidInputMessage);
             int startYear = startYearCombo.getValue();
+            if(startYearCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             Month startMonth = startMonthCombo.getValue();
+            if(startMonthCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             int startDay = startDayCombo.getValue();
+            if(startDayCombo.getValue() == null)throw new RuntimeException(invalidInputMessage);
             int startHour = startHourCombo.getValue();
+            if(startHourCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             int startMinute = startMinuteCombo.getValue();
+            if(startMinuteCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             LocalDateTime appointmentStartTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
             LocalDateTime today = LocalDateTime.now();
             int endYear = endYearCombo.getValue();
+            if(endYearCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             Month endMonth = endMonthCombo.getValue();
             int endDay = endDayCombo.getValue();
+            if(endDayCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             int endHour = endHourCombo.getValue();
+            if(endHourCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             int endMinute = endMinuteCombo.getValue();
+            if(endMinuteCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             LocalDateTime appointmentEndTime = LocalDateTime.of(endYear, endMonth, endDay, endHour, endMinute);
             int customerID = customerCombo.getValue().getCustomerID();
+            if(customerCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             int userID = userCombo.getValue().getUserID();
+            if(userCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             int contactID = contactCombo.getValue().getContactID();
+            if(contactCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
+            //The success string will be used to print a custom message in the alert that notifies the user that an update or addition has been successfully completed.
             String success;
+            String saveAlertTitle;
+
+            //Time Check logic starts here. Maybe encapsulate into its own functions?
+
+            if(appointmentStartTime.isBefore(today)) {
+                String appointmentDatePassed = "Your selected start date and time has already passed, please select a time in the future.";
+                throw new RuntimeException(appointmentDatePassed);
+
+            }
+            if(appointmentEndTime.isBefore(appointmentStartTime)) {
+                String endTimeBeforeStart = "Your current end time is before your start time. Please select an end time that is after your start date and time.";
+                throw new RuntimeException(endTimeBeforeStart);
+
+            }
+
+            String outsideBusinessHours = "Appointment times must be scheduled within business hours. Please select a time between" + localOpenTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
+                    + " and " + localCloseTime.format(DateTimeFormatter.ISO_LOCAL_TIME);
+
+            if(appointmentStartTime.toLocalTime().isBefore(localOpenTime) || appointmentStartTime.toLocalTime().isAfter(localCloseTime)) {
+                throw new RuntimeException(outsideBusinessHours);
+            }
+            if(appointmentEndTime.toLocalTime().isBefore(localOpenTime) || appointmentEndTime.toLocalTime().isAfter(localCloseTime)) {
+                throw new RuntimeException(outsideBusinessHours);
+            }
+
+            String appointmentOverlapMessage = "Another appointment exists for the selected Customer at this time. Please reschedule.";
+
+
+
+
+
+
             if(setToModify == true) {
+
+                for(Appointment appointment : allAppointments) {
+                    LocalDateTime compareStart = appointment.getStart();
+                    LocalDateTime compareEnd = appointment.getEnd();
+                    if(appointment.getAppointmentID() == modAppointmentID) {
+                        continue;
+                    }
+                    else {
+                        if(appointment.getCustomerID() == customerID) {
+                            //Conditions to check for appointment overlap were developed from 3 conditions presented in C195 "When Appointments Collide" (08-29-2021) video presented by Mark Kinkead.
+                            //However, I believe only two if statements are actually needed. Will need to try against test cases to confirm.
+                            //First condition, new appointment start time is after or equal to the comparison appointment start time AND is before or equal to the comparison appointment end time. ;
+                            if((appointmentStartTime.isAfter(compareStart) || appointmentStartTime.isEqual(compareStart)) && (appointmentStartTime.isBefore(compareEnd) || appointmentStartTime.isEqual(compareEnd))) {
+                                throw new RuntimeException(appointmentOverlapMessage);
+
+                            }
+                            //Second condition, new appointment end time is after the comparison appointment start time(equal is ok) AND new appointment end time is before the comparison appointment end time (equal is ok).
+                            else if (appointmentEndTime.isAfter(compareStart) && appointmentEndTime.isBefore(compareEnd)) {
+                                throw new RuntimeException(appointmentOverlapMessage);
+
+                            }
+
+
+
+
+                        }
+                    }
+
+                }
+
+
+
+
                 success =  AppointmentQuery.updateAppointment(modAppointmentID, title, description, location, contactID, userID, customerID, type, appointmentStartTime, appointmentEndTime);
+                saveAlertTitle = "Appointment Updated!";
             }
 
             else {
-                success =   AppointmentQuery.addAppointment(title, description, location, contactID, userID, customerID, type, appointmentStartTime, appointmentEndTime);
+                for (Appointment appointment : allAppointments) {
+                    LocalDateTime compareStart = appointment.getStart();
+                    LocalDateTime compareEnd = appointment.getEnd();
+                    if (appointment.getCustomerID() == customerID) {
+                        //Conditions to check for appointment overlap were developed from 3 conditions presented in C195 "When Appointments Collide" (08-29-2021) video presented by Mark Kinkead.
+                        //However, I believe only two if statements are actually needed. Will need to try against test cases to confirm.
+                        //First condition, new appointment start time is after or equal to the comparison appointment start time AND is before or equal to the comparison appointment end time. ;
+                        if ((appointmentStartTime.isAfter(compareStart) || appointmentStartTime.isEqual(compareStart)) && (appointmentStartTime.isBefore(compareEnd) || appointmentStartTime.isEqual(compareEnd))) {
+                            throw new RuntimeException(appointmentOverlapMessage);
+
+                        }
+                        //Second condition, new appointment end time is after the comparison appointment start time(equal is ok) AND new appointment end time is before the comparison appointment end time (equal is ok).
+                        else if (appointmentEndTime.isAfter(compareStart) && appointmentEndTime.isBefore(compareEnd)) {
+                            throw new RuntimeException(appointmentOverlapMessage);
+
+                        }
+
+
+                    }
+
+                }
+
+                success = AppointmentQuery.addAppointment(title, description, location, contactID, userID, customerID, type, appointmentStartTime, appointmentEndTime);
+                saveAlertTitle = "New Appointment Added";
+
             }
 
-            System.out.println(success);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(saveAlertTitle);
+                alert.setContentText(success);
+                alert.showAndWait();
+
+                stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+                scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
+                stage.setScene(new Scene(scene));
+                stage.show();
+
+
+
 
 
 
@@ -159,10 +293,14 @@ public class AddModifyAppointmentController implements Initializable {
 
         }
         catch(RuntimeException e) {
+            Alert missingInput = new Alert(Alert.AlertType.ERROR);
+            missingInput.setTitle("Form Submission Error");
+            missingInput.setContentText(e.getMessage());
+            missingInput.showAndWait();
 
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-
 
 
         //Write logic that start time must be before end time too!
