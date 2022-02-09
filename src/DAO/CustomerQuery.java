@@ -21,6 +21,7 @@ public class CustomerQuery {
                 PreparedStatement preparedStatement = conn.prepareStatement(selectStatement);
                 preparedStatement.execute();
                 ResultSet result = preparedStatement.getResultSet();
+                customers.clear();
 
                 while(result.next()) {
                     int customerID = result.getInt("Customer_ID");

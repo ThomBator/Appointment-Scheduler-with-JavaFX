@@ -32,6 +32,7 @@ public class MainViewController implements Initializable {
     Parent scene;
     private static ObservableList<Country> countriesList;
     private static ObservableList<Customer>customersList;
+    private static ObservableList<Appointment> appointmentsList;
 
     @FXML
     private RadioButton allRadio;
@@ -269,7 +270,8 @@ public class MainViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        appointmentTable.setItems(AppointmentQuery.getAppointments());
+        appointmentsList = DAO.AppointmentQuery.getAppointments();
+        appointmentTable.setItems(appointmentsList);
         aptAptIDCol.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
         aptTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         aptDescriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -279,7 +281,6 @@ public class MainViewController implements Initializable {
         aptEndCol.setCellValueFactory(new PropertyValueFactory<>("end"));
         aptCustIDCol.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         aptUserIDCol.setCellValueFactory(new PropertyValueFactory<>("userID"));
-
         //Need to create lookup function that grabs contact name based on contact ID
         aptContactCol.setCellValueFactory(new PropertyValueFactory<>("contactID"));
         customersList = CustomerQuery.getCustomers();

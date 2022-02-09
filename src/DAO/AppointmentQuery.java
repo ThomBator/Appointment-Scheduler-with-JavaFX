@@ -1,5 +1,6 @@
 package DAO;
 
+import controller.LoginScreenController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Appointment;
@@ -20,6 +21,7 @@ public class AppointmentQuery {
                 preparedStatement.execute();
                 ResultSet result = preparedStatement.getResultSet();
                 int index = 0;
+                appointments.clear();
 
                 while(result.next()) {
                     int appointmentID = result.getInt("Appointment_ID");
@@ -67,8 +69,7 @@ public class AppointmentQuery {
 
     public static String addAppointment(String title, String description, String location, int contactID, int userID, int customerID, String type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         try(Connection conn = DBConnection.getConnection()) {
-            String insertStatement = "INSERT INTO appointments(Appointment_ID, Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID" +
-                    " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String insertStatement = "INSERT INTO appointments (Appointment_ID, Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             Timestamp timestamp = Timestamp.from(Instant.now());
             PreparedStatement preparedStatement = conn.prepareStatement(insertStatement);
             preparedStatement.setInt(1, 0);
@@ -76,7 +77,17 @@ public class AppointmentQuery {
             preparedStatement.setString(3,description);
             preparedStatement.setString(4, location);
             preparedStatement.setString(5, type);
-            //figure out time conversion from localdate time to timestamp UTC.
+            preparedStatement.setTimestamp(6, Timestamp.valueOf(startDateTime));
+            preparedStatement.setTimestamp(7, Timestamp.valueOf(endDateTime));
+            preparedStatement.setTimestamp(8, timestamp);
+            preparedStatement.setString(9, LoginScreenController.getCurrentUser().getUserName());
+            preparedStatement.setTimestamp(10, timestamp);
+            preparedStatement.setString(11, LoginScreenController.getCurrentUser().getUserName());
+            preparedStatement.setInt(12, customerID);
+            preparedStatement.setInt(13, userID);
+            preparedStatement.setInt(14, contactID);
+            preparedStatement.execute();
+            preparedStatement.close();
 
 
         }
@@ -89,6 +100,41 @@ public class AppointmentQuery {
 
 
     }
+
+
+    public static String updateAppointment (int appointment_ID, String title, String description, String location, int contactID, int userID, int customerID, String type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        try(Connection conn = DBConnection.getConnection()) {
+            String updateStatement = "UPDATE appointments SET  Title = ?, Description = ?, Location = ?, Type = ?, Start = ?, End = ?, Last_Update = ?, Last_Updated_By = ?, Customer_ID = ?, User_ID = ?, Contact_ID = ? WHERE Appointment_ID = ?";
+            Timestamp timestamp = Timestamp.from(Instant.now());
+            PreparedStatement preparedStatement = conn.prepareStatement(updateStatement);
+
+            preparedStatement.setString(1, title);
+            preparedStatement.setString(2,description);
+            preparedStatement.setString(3, location);
+            preparedStatement.setString(4, type);
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(startDateTime));
+            preparedStatement.setTimestamp(6, Timestamp.valueOf(endDateTime));
+            preparedStatement.setTimestamp(7, timestamp);
+            preparedStatement.setString(8, LoginScreenController.getCurrentUser().getUserName());
+            preparedStatement.setInt(9, customerID);
+            preparedStatement.setInt(10, userID);
+            preparedStatement.setInt(11, contactID);
+            preparedStatement.setInt(12, appointment_ID);
+            preparedStatement.execute();
+            preparedStatement.close();
+
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        return  "Appointment Updated Successfully";
+
+
+
+    }
+
 
 
 

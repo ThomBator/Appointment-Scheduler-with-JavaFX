@@ -27,14 +27,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "userID=" + userID +
-                ", userName='" + userName + '\'' +
-                ", dateCreated=" + dateCreated +
-                ", createdBy='" + createdBy + '\'' +
-                ", lastUpdated=" + lastUpdated +
-                ", lastUpdatedBy='" + lastUpdatedBy + '\'' +
-                '}';
+        return this.getUserName();
     }
 
     public int getUserID() {

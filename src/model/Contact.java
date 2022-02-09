@@ -13,11 +13,7 @@ public class Contact {
 
     @Override
     public String toString() {
-        return "Contact{" +
-                "contactID=" + contactID +
-                ", contactName='" + contactName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return this.getContactName();
     }
 
 

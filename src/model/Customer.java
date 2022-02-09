@@ -35,18 +35,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "customerID=" + customerID +
-                ", customerName='" + customerName + '\'' +
-                ", address='" + address + '\'' +
-                ", postalCode='" + postalCode + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", dateCreated=" + dateCreated +
-                ", createdBy='" + createdBy + '\'' +
-                ", lastUpdated=" + lastUpdated +
-                ", lastUpdatedBy='" + lastUpdatedBy + '\'' +
-                ", divisionId=" + divisionId +
-                '}';
+        return this.getCustomerName();
     }
 
 

@@ -11,7 +11,7 @@
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label prefHeight="27.0" prefWidth="262.0" text="Add Appointment">
+                  <Label fx:id="addModifyTitle" prefHeight="27.0" prefWidth="262.0" text="Add Appointment">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
