@@ -129,6 +129,7 @@ public class AddModifyAppointmentController implements Initializable {
         try{
 
             //This section of the function extracts data from the form. If a field is empty, a runtime exception is thrown.
+            //isBlank() is better than isEmpty()
             String title = titleField.getText();
             if(title.isEmpty()) throw new RuntimeException(invalidInputMessage);
             String description = descriptionField.getText();
@@ -165,26 +166,32 @@ public class AddModifyAppointmentController implements Initializable {
             if(userCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
             int contactID = contactCombo.getValue().getContactID();
             if(contactCombo.getValue() == null) throw new RuntimeException(invalidInputMessage);
+            //Make specific messages for each
             //The success string will be used to print a custom message in the alert that notifies the user that an update or addition has been successfully completed.
             String success;
             String saveAlertTitle;
 
-            //Time Check logic starts here. Maybe encapsulate into its own functions?
+            //Time Check logic starts here.
 
+            //This condition checks that all new appointments are in the future
+            //Maybe leave this one off for testers
             if(appointmentStartTime.isBefore(today)) {
                 String appointmentDatePassed = "Your selected start date and time has already passed, please select a time in the future.";
                 throw new RuntimeException(appointmentDatePassed);
 
             }
+            //This condition checks to make sure the end time isn't before the start time
             if(appointmentEndTime.isBefore(appointmentStartTime)) {
                 String endTimeBeforeStart = "Your current end time is before your start time. Please select an end time that is after your start date and time.";
                 throw new RuntimeException(endTimeBeforeStart);
 
             }
 
+            //This String is used as the exception message for both of the following conditions.
             String outsideBusinessHours = "Appointment times must be scheduled within business hours. Please select a time between" + localOpenTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
                     + " and " + localCloseTime.format(DateTimeFormatter.ISO_LOCAL_TIME);
 
+            //These two conditions check to ensure that the start and end times are not outside Eastern Business Hours.
             if(appointmentStartTime.toLocalTime().isBefore(localOpenTime) || appointmentStartTime.toLocalTime().isAfter(localCloseTime)) {
                 throw new RuntimeException(outsideBusinessHours);
             }
@@ -192,6 +199,9 @@ public class AddModifyAppointmentController implements Initializable {
                 throw new RuntimeException(outsideBusinessHours);
             }
 
+
+
+            //This String is used as the exception message in the two following appointment overlap checks.
             String appointmentOverlapMessage = "Another appointment exists for the selected Customer at this time. Please reschedule.";
 
 
@@ -210,16 +220,21 @@ public class AddModifyAppointmentController implements Initializable {
                     else {
                         if(appointment.getCustomerID() == customerID) {
                             //Conditions to check for appointment overlap were developed from 3 conditions presented in C195 "When Appointments Collide" (08-29-2021) video presented by Mark Kinkead.
-                            //However, I believe only two if statements are actually needed. Will need to try against test cases to confirm.
-                            //First condition, new appointment start time is after or equal to the comparison appointment start time AND is before or equal to the comparison appointment end time. ;
+
+                            //First condition: new appointment start time is after or equal to the comparison appointment start time AND is before or equal to the comparison appointment end time. ;
                             if((appointmentStartTime.isAfter(compareStart) || appointmentStartTime.isEqual(compareStart)) && (appointmentStartTime.isBefore(compareEnd) || appointmentStartTime.isEqual(compareEnd))) {
                                 throw new RuntimeException(appointmentOverlapMessage);
 
                             }
-                            //Second condition, new appointment end time is after the comparison appointment start time(equal is ok) AND new appointment end time is before the comparison appointment end time (equal is ok).
+                            //Second condition: new appointment end time is after the comparison appointment start time(equal is ok) AND new appointment end time is before the comparison appointment end time (equal is ok).
                             else if (appointmentEndTime.isAfter(compareStart) && appointmentEndTime.isBefore(compareEnd)) {
                                 throw new RuntimeException(appointmentOverlapMessage);
 
+                            }
+                            //Third condition: new appointment start time is before the comparison appointment start time and new appointment end time is after the comparison appointment end time.
+                            //This condition is testing to see if an existing appointment occurs entirely within the time window of the thew appointment.
+                            else if (appointmentStartTime.isBefore(compareStart) && appointmentEndTime.isAfter(compareEnd) ) {
+                                throw new RuntimeException(appointmentOverlapMessage);
                             }
 
 
@@ -253,6 +268,12 @@ public class AddModifyAppointmentController implements Initializable {
                         else if (appointmentEndTime.isAfter(compareStart) && appointmentEndTime.isBefore(compareEnd)) {
                             throw new RuntimeException(appointmentOverlapMessage);
 
+                        }
+
+                        //Third condition: new appointment start time is before the comparison appointment start time and new appointment end time is after the comparison appointment end time.
+                        //This condition is testing to see if an existing appointment occurs entirely within the time window of the thew appointment.
+                        else if (appointmentStartTime.isBefore(compareStart) && appointmentEndTime.isAfter(compareEnd) ) {
+                            throw new RuntimeException(appointmentOverlapMessage);
                         }
 
 
@@ -382,6 +403,7 @@ public class AddModifyAppointmentController implements Initializable {
     //Credit for using streams to return an ObservableList goes to: https://stackoverflow.com/questions/33849538/collectors-lambda-return-observable-list
     public static ObservableList<Integer> numRangesForDates(int first, int last) {
         return  IntStream.range(first, last).boxed().collect(Collectors.toCollection(FXCollections::observableArrayList));
+
     }
 
     public static ObservableList<Month> getMonths() {
@@ -410,7 +432,7 @@ public class AddModifyAppointmentController implements Initializable {
         int selectedEndMonthLength = getDays(appointmentEndDate.getMonth(), appointmentEndDate.getYear());
         endDays = numRangesForDates(1, selectedEndMonthLength + 1);
         endDayCombo.setItems(endDays);
-        startMonthCombo.getSelectionModel().select(appointmentStartDate.getMonth());
+        startMonthCombo.setValue(appointment.getStart().getMonth());
         startDayCombo.getSelectionModel().select(appointmentStartDate.getDayOfMonth());
         startHourCombo.getSelectionModel().select(appointmentStartDate.getHour());
         startMinuteCombo.getSelectionModel().select(appointmentStartDate.getMinute());
