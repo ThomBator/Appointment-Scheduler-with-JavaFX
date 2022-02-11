@@ -22,6 +22,8 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.PropertyPermission;
@@ -189,17 +191,22 @@ public class MainViewController implements Initializable {
     }
 
     @FXML
-    void onUpdateAppointment(ActionEvent event) { try {
+    void onUpdateAppointment(ActionEvent event) {
+        try {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/view/AddModifyAppointment.fxml"));
         loader.load();
+        //Was getting a null pointer exception when selecting appointment from table, so I created an optional to deal with that.
         AddModifyAppointmentController addModifyAppointmentController = loader.getController();
-       Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
-        addModifyAppointmentController.modifyExistingAppointment(appointment);
-        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
-        scene = loader.getRoot();
-        stage.setScene(new Scene(scene));
-        stage.show();
+        Optional<Appointment> appointmentOptional = Optional.ofNullable(appointmentTable.getSelectionModel().getSelectedItem());
+        if(appointmentOptional.isPresent()) {
+            Appointment appointment = appointmentOptional.get();
+            addModifyAppointmentController.modifyExistingAppointment(appointment);
+            stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            stage.setScene(new Scene(scene));
+            stage.show();
+        }
     }
 
     catch(RuntimeException e) {
@@ -207,6 +214,7 @@ public class MainViewController implements Initializable {
         alert.setTitle("No Appointment Selected");
         alert.setContentText("You must select an appointment from the appointment table to update an appointment record.");
         alert.showAndWait();
+        e.printStackTrace();
 
     }
     catch (IOException e) {
@@ -293,6 +301,35 @@ public class MainViewController implements Initializable {
         custCountryNameCol.setCellValueFactory(new PropertyValueFactory<>("countryName"));
         custDivCol.setCellValueFactory(new PropertyValueFactory<>("divisionName"));
 
+        //Check For any Appointments within 15 Minutes of Login
+        Long timeUntilAppointment;
+        LocalTime timeAtLogin = LocalTime.now();
+
+        for(Appointment appointmentCheck : appointmentsList) {
+            if(appointmentCheck.getUserID() == LoginScreenController.getCurrentUser().getUserID()) {
+                //Do we need to find appointments that are currently going but ending within 15 minutes?
+                LocalTime appointmentStart = appointmentCheck.getStart().toLocalTime();
+                timeUntilAppointment = ChronoUnit.MINUTES.between(timeAtLogin, appointmentStart);
+                long timeUntilAppointmentPositive = Math.abs(timeUntilAppointment);
+
+                if(timeUntilAppointmentPositive <= 15) {
+                    String appointmentProxmityAlert = "You have an appointment that begins in approximately " + timeUntilAppointmentPositive + " minutes.";
+                    if(timeUntilAppointment < 0) {
+                        appointmentProxmityAlert = "You have an appointment that started approximately" + timeUntilAppointment + "minutes ago.";
+                    }
+                    Alert appointmentAlert = new Alert(Alert.AlertType.INFORMATION);
+                    appointmentAlert.setTitle("Appointment Notification");
+                    appointmentAlert.setContentText(appointmentProxmityAlert);
+                    appointmentAlert.showAndWait();
+
+
+                }
+
+
+
+            }
+
+        }
 
 
 
