@@ -10,18 +10,23 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 
 public class AppointmentQuery {
-    private static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+
+
+
 
     public static ObservableList<Appointment> getAppointments() {
 
+        ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+
 
             try(Connection conn = DBConnection.getConnection()){
+
                 String selectStatement = "SELECT * from appointments";
                 PreparedStatement preparedStatement = conn.prepareStatement(selectStatement);
                 preparedStatement.execute();
                 ResultSet result = preparedStatement.getResultSet();
-                int index = 0;
-                appointments.clear();
+
+
 
                 while(result.next()) {
                     int appointmentID = result.getInt("Appointment_ID");
@@ -132,6 +137,22 @@ public class AppointmentQuery {
         return  "Appointment Updated Successfully";
 
 
+
+    }
+
+    public static void deleteAppointment(int appointmentID) {
+        try(Connection connection = DBConnection.getConnection()) {
+            String deleteStatement = "DELETE FROM appointments WHERE Appointment_ID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteStatement);
+            preparedStatement.setInt(1, appointmentID);
+           preparedStatement.execute();
+
+            preparedStatement.close();
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 

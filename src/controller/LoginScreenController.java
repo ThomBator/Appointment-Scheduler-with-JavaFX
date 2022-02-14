@@ -1,5 +1,7 @@
 package controller;
 import DAO.DBConnection;
+import com.sun.tools.javac.Main;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,8 +10,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.Appointment;
 import model.User;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -26,6 +32,10 @@ public class LoginScreenController implements Initializable {
     private Parent scene;
     private static List<User> loginList;
     private static User currentUser;
+    private static ObservableList<Appointment> appointmentsList;
+    public static  LocalTime timeAtLogin = LocalTime.now();
+    public static LocalDateTime currentLocalDateTime = LocalDateTime.now();
+
     //Tracks currently logged-in user to update database as needed.
 
 
@@ -67,6 +77,8 @@ public class LoginScreenController implements Initializable {
 
     }
 
+
+
     @FXML
     void onSignIn(ActionEvent event) throws IOException {
         try{
@@ -81,15 +93,15 @@ public class LoginScreenController implements Initializable {
                     User loginUser = loginList.get(i);
 
 
-                    if(loginUser.getUserName().equals(usernameInput.getText()) &&
-                            loginUser.getPassword().equals(passwordInput.getText())) {
-                        updateLoginActivity(true);
+                    if(loginUser.getUserName().equals(usernameInput.getText()) && loginUser.getPassword().equals(passwordInput.getText())) {
                         currentUser = loginUser;
+                        updateLoginActivity(true);
                         validInput = true;
                         stage = (Stage)((Button)event.getSource()).getScene().getWindow();
                         scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
                         stage.setScene(new Scene(scene));
                         stage.show();
+
 
 
 
@@ -100,7 +112,10 @@ public class LoginScreenController implements Initializable {
 
                 }
 
-                if(!validInput) {
+                MainViewController mainViewController = new MainViewController();
+                mainViewController.checkAppointmentTimes();
+
+                   if(!validInput) {
                     throw new RuntimeException();
 
 

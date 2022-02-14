@@ -41,22 +41,11 @@ public class Appointment {
 
     @Override
     public String toString() {
-        return "Appointment{" +
-                "appointmentID=" + appointmentID +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", location='" + location + '\'' +
-                ", type='" + type + '\'' +
-                ", start=" + start +
-                ", end=" + end +
-                ", dateCreated=" + dateCreated +
-                ", createdBy='" + createdBy + '\'' +
-                ", lastUpdated=" + lastUpdated +
-                ", lastUpdatedBy='" + lastUpdatedBy + '\'' +
-                ", customerID=" + customerID +
-                ", userID=" + userID +
-                ", contactID=" + contactID +
-                '}';
+        return "Appointment  ID: " + appointmentID +
+                ", Start Date: " + start.toLocalDate() +
+                ", Start Time: " + start.toLocalTime() +
+                ", End Date: " + end.toLocalDate() +
+                ", End Time: "  + end.toLocalTime() + ".";
     }
 
     public int getAppointmentID() {

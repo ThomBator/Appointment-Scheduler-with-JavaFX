@@ -2,6 +2,7 @@ package controller;
 
 import DAO.FirstLevelDivisionQuery;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Optional;
@@ -35,6 +37,8 @@ public class MainViewController implements Initializable {
     private static ObservableList<Country> countriesList;
     private static ObservableList<Customer>customersList;
     private static ObservableList<Appointment> appointmentsList;
+    public static  LocalTime timeAtLogin = LocalTime.now();
+    public static LocalDateTime currentLocalDateTime = LocalDateTime.now();
 
     @FXML
     private RadioButton allRadio;
@@ -106,7 +110,7 @@ public class MainViewController implements Initializable {
     private TableView<Customer> customerTable;
 
     @FXML
-    private RadioButton montRadio;
+    private RadioButton monthRadio;
 
     @FXML
     private TextField textFieldSearchApt;
@@ -141,26 +145,66 @@ public class MainViewController implements Initializable {
 
     @FXML
     void onDeleteAppointment(ActionEvent event) {
+        int appointmentID = appointmentTable.getSelectionModel().getSelectedItem().getAppointmentID();
+        Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDelete.setTitle("Confirm Delete Appointment");
+        confirmDelete.setContentText("Deleted appointments cannot be recovered. Click OK to proceed with deletion");
+        Optional<ButtonType> result = confirmDelete.showAndWait();
+
+        if(result.isPresent() && result.get() == ButtonType.OK){
+            AppointmentQuery.deleteAppointment(appointmentID);
+
+            Alert deleteSuccess = new Alert(Alert.AlertType.INFORMATION);
+            deleteSuccess.setTitle("Appointment Deleted");
+            deleteSuccess.setContentText("Appointment Deleted Successfully");
+            deleteSuccess.showAndWait();
+            appointmentsList = AppointmentQuery.getAppointments();
+            appointmentTable.setItems(appointmentsList);
+
+        }
+
+
+
 
     }
 
     @FXML
     void onDeleteCustomer(ActionEvent event) {
+        try {
+            Customer customerToDelete = customerTable.getSelectionModel().getSelectedItem();
+
+            Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmDelete.setTitle("Confirm Delete Customer");
+            confirmDelete.setContentText("Deleted customers cannot be recovered. Click OK to proceed with deletion");
+            Optional<ButtonType> result = confirmDelete.showAndWait();
+            if(result.isPresent() && result.get() == ButtonType.OK) {
+                for(Appointment customerAppointments : appointmentsList) {
+                    if (customerAppointments.getCustomerID() == customerToDelete.getCustomerID()) {
+                        throw new RuntimeException();
+
+                    }
+                }
+                CustomerQuery.deleteCustomer(customerToDelete.getCustomerID());
+                Alert customerDeleted = new Alert(Alert.AlertType.INFORMATION);
+                customerDeleted.setTitle("Customer deleted successfully");
+                customerDeleted.setContentText("The selected customer has been deleted.");
+            }
+
+        }
+        catch(RuntimeException e) {
+            Alert cannotDeleteCustomer = new Alert(Alert.AlertType.ERROR);
+            cannotDeleteCustomer.setTitle("Customer Can't Be Deleted");
+            cannotDeleteCustomer.setContentText("This customer still has appointments booked in the system. Please delete all appointments for this customer before proceeding.");
+            cannotDeleteCustomer.showAndWait();
+
+        }
 
     }
 
-    @FXML
-    void onSearchAppointment(ActionEvent event) {
-
-    }
-
-    @FXML
-    void onSearchCustomer(ActionEvent event) {
-
-    }
 
     @FXML
     void onSelectAllRadio(ActionEvent event) {
+        appointmentTable.setItems(appointmentsList);
 
 
 
@@ -170,7 +214,11 @@ public class MainViewController implements Initializable {
     }
 
     @FXML
-    void onSelectAppointmentReport(ActionEvent event) {
+    void onSelectAppointmentReport(ActionEvent event) throws IOException {
+        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+        scene = FXMLLoader.load(getClass().getResource("/view/Reports.fxml"));
+        stage.setScene(new Scene(scene));
+        stage.show();
 
     }
 
@@ -182,11 +230,19 @@ public class MainViewController implements Initializable {
 
     @FXML
     void onSelectMonthRadio(ActionEvent event) {
+        Month currentMonth = currentLocalDateTime.getMonth();
+        FilteredList<Appointment> appointmentsThisMonth = appointmentsList.filtered(a -> a.getStart().getMonth() == currentMonth);
+        appointmentTable.setItems(appointmentsThisMonth);
 
-    }
+        }
+
+
+
 
     @FXML
     void onSelectWeekRadio(ActionEvent event) {
+    FilteredList<Appointment> appointmentsThisWeek = appointmentsList.filtered(a -> Math.abs(ChronoUnit.DAYS.between(a.getStart(), currentLocalDateTime)) <= 7);
+    appointmentTable.setItems(appointmentsThisWeek);
 
     }
 
@@ -196,18 +252,15 @@ public class MainViewController implements Initializable {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/view/AddModifyAppointment.fxml"));
         loader.load();
-        //Was getting a null pointer exception when selecting appointment from table, so I created an optional to deal with that.
         AddModifyAppointmentController addModifyAppointmentController = loader.getController();
-        Optional<Appointment> appointmentOptional = Optional.ofNullable(appointmentTable.getSelectionModel().getSelectedItem());
-        if(appointmentOptional.isPresent()) {
-            Appointment appointment = appointmentOptional.get();
-            addModifyAppointmentController.modifyExistingAppointment(appointment);
-            stage = (Stage)((Button)event.getSource()).getScene().getWindow();
-            scene = loader.getRoot();
-            stage.setScene(new Scene(scene));
-            stage.show();
+        Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+        addModifyAppointmentController.modifyExistingAppointment(appointment);
+        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+        scene = loader.getRoot();
+        stage.setScene(new Scene(scene));
+        stage.show();
         }
-    }
+
 
     catch(RuntimeException e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -272,8 +325,39 @@ public class MainViewController implements Initializable {
 
     }
 
-    //NEEDED: Write method to check for appointments within 15 minutes of login and send an alert if needed.
+    public static void checkAppointmentTimes() {
+        Long timeUntilAppointment;
+        String appointmentProximityAlert = "You have no appointments scheduled within 15 minutes of your login.";
+        for(Appointment appointmentCheck : appointmentsList) {
+            if(appointmentCheck.getUserID() == LoginScreenController.getCurrentUser().getUserID()) {
+                //Do we need to find appointments that are currently going but ending within 15 minutes?
+                LocalTime appointmentStart = appointmentCheck.getStart().toLocalTime();
+                timeUntilAppointment = ChronoUnit.MINUTES.between(timeAtLogin, appointmentStart);
+                long timeUntilAppointmentPositive = Math.abs(timeUntilAppointment);
 
+
+                if(timeUntilAppointmentPositive <= 15) {
+                    String appointmentDetails = "Appointment details: " + appointmentCheck.toString();
+                    appointmentProximityAlert = "You have an appointment that begins in approximately " + timeUntilAppointmentPositive + " minutes."
+                            + appointmentDetails;
+                    if(timeUntilAppointment < 0) {
+                        appointmentProximityAlert = "You have an appointment that started approximately " + timeUntilAppointmentPositive + " minutes ago. "
+                                + appointmentDetails;
+                    }
+
+
+
+                }
+            }
+
+        }
+
+        Alert appointmentAlert = new Alert(Alert.AlertType.INFORMATION);
+        appointmentAlert.setTitle("Appointment Notification");
+        appointmentAlert.setContentText(appointmentProximityAlert);
+        appointmentAlert.showAndWait();
+
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -300,38 +384,6 @@ public class MainViewController implements Initializable {
         custPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
         custCountryNameCol.setCellValueFactory(new PropertyValueFactory<>("countryName"));
         custDivCol.setCellValueFactory(new PropertyValueFactory<>("divisionName"));
-
-        //Check For any Appointments within 15 Minutes of Login
-        Long timeUntilAppointment;
-        LocalTime timeAtLogin = LocalTime.now();
-
-        for(Appointment appointmentCheck : appointmentsList) {
-            if(appointmentCheck.getUserID() == LoginScreenController.getCurrentUser().getUserID()) {
-                //Do we need to find appointments that are currently going but ending within 15 minutes?
-                LocalTime appointmentStart = appointmentCheck.getStart().toLocalTime();
-                timeUntilAppointment = ChronoUnit.MINUTES.between(timeAtLogin, appointmentStart);
-                long timeUntilAppointmentPositive = Math.abs(timeUntilAppointment);
-
-                if(timeUntilAppointmentPositive <= 15) {
-                    String appointmentProxmityAlert = "You have an appointment that begins in approximately " + timeUntilAppointmentPositive + " minutes.";
-                    if(timeUntilAppointment < 0) {
-                        appointmentProxmityAlert = "You have an appointment that started approximately" + timeUntilAppointment + "minutes ago.";
-                    }
-                    Alert appointmentAlert = new Alert(Alert.AlertType.INFORMATION);
-                    appointmentAlert.setTitle("Appointment Notification");
-                    appointmentAlert.setContentText(appointmentProxmityAlert);
-                    appointmentAlert.showAndWait();
-
-
-                }
-
-
-
-            }
-
-        }
-
-
 
 
 

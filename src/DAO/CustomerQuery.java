@@ -9,11 +9,11 @@ import java.sql.*;
 import java.time.Instant;
 
 public class CustomerQuery {
-    private static ObservableList<Customer> customers   = FXCollections.observableArrayList();
     private static User currentUser = controller.LoginScreenController.getCurrentUser();
 
     public static  ObservableList<Customer> getCustomers() {
 
+        ObservableList<Customer> customers   = FXCollections.observableArrayList();
 
             try( Connection conn = DBConnection.getConnection()){
 
@@ -123,5 +123,18 @@ public class CustomerQuery {
 
     }
 
+    public static void deleteCustomer(int customerID) {
+        try (Connection connection = DBConnection.getConnection()) {
+            String deleteStatement = "DELETE FROM customers WHERE Customer_ID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteStatement);
+            preparedStatement.setInt(1, customerID);
+            preparedStatement.close();
 
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

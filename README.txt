@@ -1,8 +1,10 @@
 Title:  Desktop Appointment Scheduling Application
 
-Purpose:
+Purpose: This application allows users to schedule and update appointments for customers. There is additional functionality
+to add new customers and update customer information as needed. The program also includes basic reporting functionality to get
+metrics about appointments currently stored in the database.
 
-Date:
+Date: Tuesday, February 15th 2022.
 
 Author: Thomas Bator
 
@@ -25,6 +27,10 @@ JavaFX Version: SDK 17.0.1
 SQL Driver Used: mysql-connector-java-8.0.27
 
 How to Run Program:
+From Intellij:
+Open project folder in Intellij. Click run.
 
-Description of Report from Section A3F of Rubric:
+
+Description of Report from Section A3F of Rubric: The additional report functionality I created allows users to see the total number of scheduled
+appointments for each customer in the database.
 
