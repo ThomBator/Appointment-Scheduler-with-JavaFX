@@ -4,6 +4,10 @@ import javafx.collections.ObservableList;
 
 import java.time.LocalDateTime;
 
+/**
+ The Customer Class is used to take customer records from the customers database table and create Java objects within the program.
+ */
+
 public class Customer {
     private int customerID;
     private String customerName;
@@ -124,6 +128,11 @@ public class Customer {
         return divisionName;
     }
 
+    /**
+     In order to have a division name easily accessible by the various forms and table views, this method was created to take the divisionID provided by the database
+     record and use it to find the associated division name in the first_level_divisions database table. Once found, the name is added to each object under the divisionName field.
+     @param parameterDivisionID the ID of the division whose name needs to be provided.
+     */
     public void setDivisionName(int parameterDivisionID) {
         ObservableList<FirstLevelDivision> divisions = DAO.FirstLevelDivisionQuery.getFirstLevelDivisions();
         for(int i = 0; i < divisions.size(); i++) {
@@ -140,7 +149,11 @@ public class Customer {
     public String getCountryName() {
         return countryName;
     }
-
+    /**
+     The setCountryName method was implemented for essentially the same reasons as the setDivisionName method above. The customer database only provides a divisionID for each record.
+     This method takes the provided ID and uses it to find the associated country ID in the first_level_divisions table in the database. Then, the method uses that countryID to find the associated country name from the countries table.
+     @param parameterDivisionID the division ID provided from the customer database record.
+     */
     public void setCountryName(int parameterDivisionID) {
         ObservableList<FirstLevelDivision> divisions = DAO.FirstLevelDivisionQuery.getFirstLevelDivisions();
         ObservableList<Country> countries = DAO.CountryQuery.getDBCountries();

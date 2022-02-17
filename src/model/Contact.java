@@ -1,5 +1,7 @@
 package model;
-
+/**
+ The Contact Class is used to take appointment records from the Contact database table and create Java objects within the program.
+ */
 public class Contact {
     private int contactID;
     private String contactName;

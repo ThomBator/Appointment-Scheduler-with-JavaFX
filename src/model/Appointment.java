@@ -2,6 +2,10 @@ package model;
 
 import java.time.LocalDateTime;
 
+/**
+ The Appointment Class is used to take appointment records from the appointments database table and create Java objects within the program.
+ */
+
 public class Appointment {
     private int appointmentID;
     private String title;

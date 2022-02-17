@@ -8,14 +8,21 @@ import model.Country;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ This class handles all queries for Country objects and their associated records in the countries table of the database.
+ */
 public class CountryQuery {
     private static ObservableList<Country> countries = FXCollections.observableArrayList();
+    /**
+     The getDBCountries method uses a Prepared Statement object to execute an SQL select statement to the database.
+     Ths returns a Result Set, which is then iterated through to take each country record and use the fields to create an object of the Country
 
+     class.
+     */
     public static ObservableList<Country> getDBCountries() {
         if (countries.isEmpty()) {
             try (Connection conn = DBConnection.getConnection()) {
-                String selectStatement = "SELECT * FROM Countries";
+                String selectStatement = "SELECT * FROM countries";
 
                 PreparedStatement preparedStatement = conn.prepareStatement(selectStatement);
                 preparedStatement.execute();

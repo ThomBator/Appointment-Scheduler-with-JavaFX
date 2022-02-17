@@ -1,7 +1,9 @@
 package model;
 
 import java.time.LocalDateTime;
-
+/**
+ The User Class is used to take customer records from the users database table and create Java objects within the program.
+ */
 public class User {
     private int userID;
     private String userName;

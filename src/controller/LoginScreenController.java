@@ -27,6 +27,10 @@ import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
 
+/**
+ This controller class manages the data flow and operations associated with the view defined by loginScreen.fxml.
+ */
+
 public class LoginScreenController implements Initializable {
     private Stage stage;
     private Parent scene;
@@ -36,7 +40,7 @@ public class LoginScreenController implements Initializable {
     public static  LocalTime timeAtLogin = LocalTime.now();
     public static LocalDateTime currentLocalDateTime = LocalDateTime.now();
 
-    //Tracks currently logged-in user to update database as needed.
+
 
 
 
@@ -70,7 +74,10 @@ public class LoginScreenController implements Initializable {
     private Label timeZoneLabel;
 
 
-
+    /**
+     This method is an event handler that exits the program when the exit button is clicked.
+     @param event listens for click on the exit button.
+     */
     @FXML
     void onExitProgram(ActionEvent event) {
         System.exit(0);
@@ -78,6 +85,12 @@ public class LoginScreenController implements Initializable {
     }
 
 
+    /**
+     When the 'Sign In' button is clicked, this method checks the input username against all usernames in the database.
+     If a username matches, the method checks to see whether the password associated with that user matches the password that was input.
+     If the password/username do not match an exception is thrown.
+     @param event listens for click of sign in button.
+     */
 
     @FXML
     void onSignIn(ActionEvent event) throws IOException {
@@ -156,7 +169,11 @@ public class LoginScreenController implements Initializable {
 
     }
 
-
+    /**
+     When every time the 'Sign In' Button is clicked, the onSignIn method calls this helper method to record the results of that sign in attempt to a file called
+     login_activity.txt. The method prints details of the login attempt, time and whether the attempt was successful.
+     @param wasSuccessful is passed from onSignIn as true if the login was successful, false if not.
+     */
     public static void updateLoginActivity(boolean wasSuccessful)  {
 
         try( FileWriter logUpdate = new FileWriter("login_activity.txt", true);
@@ -180,13 +197,21 @@ public class LoginScreenController implements Initializable {
 
     }
 
+    /**
+     When a login is successful, the onSignIn method sets the private static User currentUser equal to the User in the database whose login credentials were used.
+     The getCurrentUser method can be called from other classes when the currently logged-in user's information is needed.
+     */
+
     public static User  getCurrentUser() {
         return currentUser;
     }
 
 
 
-
+    /**
+     This class' initalize method establishes the system's Locale and default Timezone. Based on this information, the current timezone is displayed on screen.
+     If the locale is identified as being a french-speaking country, this method will reset all labels to French using the values provided in the rb_fr.properties file.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 

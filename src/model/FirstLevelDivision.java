@@ -2,6 +2,10 @@ package model;
 
 import java.time.LocalDateTime;
 
+/**
+ The FirstLevelDivsion Class is used to take customer records from the first_level_divisions database table and create Java objects within the program.
+ */
+
 public class FirstLevelDivision {
     private int divisionID;
     private String divisionName;
@@ -10,7 +14,6 @@ public class FirstLevelDivision {
     private LocalDateTime lastUpdated;
     private String lastUpdatedBy;
     private int countryID;
-
     public FirstLevelDivision(int divisionID, String divisionName, LocalDateTime dateCreated, String createdBy, LocalDateTime lastUpdated, String lastUpdatedBy, int countryID) {
         this.divisionID = divisionID;
         this.divisionName = divisionName;

@@ -29,6 +29,11 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+
+
+/**
+ This controller class manages the data flow and operations associated with the Reports view defined in Reports.fxml.
+ */
 public class ReportsController implements Initializable {
     Stage stage;
     Parent scene;
@@ -90,7 +95,10 @@ public class ReportsController implements Initializable {
     @FXML
     private TableView<Appointment> aptByContactTableView;
 
-
+    /**
+     This event handler method shows the total number of appointments booked for a selected contact.
+     @param event listens for a contact name to be selected in the contactCombo combo box.
+     */
     @FXML
     void onSelectContact(ActionEvent event){
         Contact selectedContact = contactCombo.getValue();
@@ -104,6 +112,11 @@ public class ReportsController implements Initializable {
         endColumn.setCellValueFactory(new PropertyValueFactory<>("end"));
         customerIDColumn.setCellValueFactory(new PropertyValueFactory<>("customerID"));
     }
+    /**
+     ADDITIONAL REPORT SELECTED BY STUDENT FOR SECTION 3f:
+     This event handler method displays the total number of appointments booked for a selected customer.
+     @param event listens for a contact name to be selected in the customerCombo combo box.
+     */
 
     @FXML
     void onSelectCustomer(ActionEvent event) {
@@ -115,6 +128,10 @@ public class ReportsController implements Initializable {
         }
 
 
+    /**
+     This event handler method displays the total number of appointments booked for a selected calendar Month.
+     @param event listens for a month name to be selected in the monthCombo combo box.
+     */
     @FXML
     void onSelectMonth(ActionEvent event) {
         Month selectedMonth = monthCombo.getValue();
@@ -125,7 +142,10 @@ public class ReportsController implements Initializable {
 
 
     }
-
+    /**
+     This event handler method displays the total number of appointments booked for a selected appointment Type.
+     @param event listens for a month name to be selected in the typeCombo combo box.
+     */
     @FXML
     void onSelectType(ActionEvent event) {
         String selectedType= typeCombo.getValue();
@@ -135,7 +155,12 @@ public class ReportsController implements Initializable {
 
     }
 
-
+    /**
+     This event handler redirects the user to the Main View when the Return To main Button is Clicked.
+     I opted not to use the returnToMain method in the MainViewController for this event handler, because
+     the alert warning of losing unsaved information was not needed in this context.
+     @param event listens for Return to Main button to be clicked.
+     */
     @FXML
     void onReturnToMain(ActionEvent event) throws IOException {
         stage = (Stage)((Button)event.getSource()).getScene().getWindow();
@@ -143,7 +168,10 @@ public class ReportsController implements Initializable {
         stage.setScene(new Scene(scene));
         stage.show();
     }
-
+    /**
+     The typeList method returns a list of all type Strings input for appointments. To avoid type strings being duplicated,
+     the method first checks whether a given type string is already present before adding it to the list.
+     */
     public static ObservableList<String> typeList() {
         ObservableList<String> types = FXCollections.observableArrayList();
         for(Appointment appointment : allAppointments) {
@@ -153,6 +181,9 @@ public class ReportsController implements Initializable {
         }
         return types;
     }
+    /**
+     This class' initialize method sets the initial prompt text and combo box items required for the Reports view.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customerCombo.setItems(customerList);

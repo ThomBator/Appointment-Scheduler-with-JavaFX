@@ -8,12 +8,18 @@ import model.Appointment;
 import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
-
+/**
+ This class handles all queries related to objects of the Appointment class and associated database records in the appointments table.
+ */
 public class AppointmentQuery {
 
 
 
-
+    /**
+     The getAppointments uses a select-all SQL statement passed through a PreparedStatement object to query the database and provide all appointment records.
+     Those records collected in a ResultSet object. The ResultSet is looped through and all individual appointments are used to create objects of the Appointment class.
+     An ObservableList list of all created Appointment objects is then returned by the method call.
+     */
     public static ObservableList<Appointment> getAppointments() {
 
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
@@ -71,7 +77,21 @@ public class AppointmentQuery {
 
         return appointments;
     }
+    /**
+     The addAppointment method takes the individual data fields that compose an Appointment record as input. These records are then passed to the database using a PreparedStatement object.
+     The specific field data for each new appointment are passed into the Prepared Statement using bind variables for greater security.
+     The prepared statement is then executed to insert a new appointment into the appointments' table in the database.
+     @param title the appointment title String
+     @param description the appointment description String
+     @param location the appointment location String
+     @param contactID the appointment contact ID int
+     @param userID the appointment userID int
+     @param customerID the appointment customerID int
+     @param type the appointment type String
+     @param startDateTime  the appointment start date and time LocalDateTime
+     @param endDateTime the appointment end date and time LocalDateTime
 
+     */
     public static String addAppointment(String title, String description, String location, int contactID, int userID, int customerID, String type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         try(Connection conn = DBConnection.getConnection()) {
             String insertStatement = "INSERT INTO appointments (Appointment_ID, Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -106,7 +126,22 @@ public class AppointmentQuery {
 
     }
 
+    /**
+     The updateAppointment method takes the individual data fields that compose an Appointment record as input. These records are then passed to the database using a PreparedStatement object to update an existing appointment in the database.
+     The existing appointment's appointment ID is passed as a parameter to make sure the correct appointment is updated.
+     The specific field data for each new appointment are passed into the Prepared Statement using bind variables for greater security.
+     @param appointment_ID the ID of the appointment to be updated
+     @param title the appointment title String
+     @param description the appointment description String
+     @param location the appointment location String
+     @param contactID the appointment contact ID int
+     @param userID the appointment userID int
+     @param customerID the appointment customerID int
+     @param type the appointment type String
+     @param startDateTime  the appointment start date and time LocalDateTime
+     @param endDateTime the appointment end date and time LocalDateTime
 
+     */
     public static String updateAppointment (int appointment_ID, String title, String description, String location, int contactID, int userID, int customerID, String type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         try(Connection conn = DBConnection.getConnection()) {
             String updateStatement = "UPDATE appointments SET  Title = ?, Description = ?, Location = ?, Type = ?, Start = ?, End = ?, Last_Update = ?, Last_Updated_By = ?, Customer_ID = ?, User_ID = ?, Contact_ID = ? WHERE Appointment_ID = ?";
@@ -139,7 +174,11 @@ public class AppointmentQuery {
 
 
     }
-
+    /**
+     This method used a prepared statement to send a delete SQL statement to the database.
+     The prepared statement uses a bind variable to insert the target appointment ID for greater security.
+     @param appointmentID the ID of the appointment to be deleted.
+     */
     public static void deleteAppointment(int appointmentID) {
         try(Connection connection = DBConnection.getConnection()) {
             String deleteStatement = "DELETE FROM appointments WHERE Appointment_ID = ?";

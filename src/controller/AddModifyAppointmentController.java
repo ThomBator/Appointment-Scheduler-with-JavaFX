@@ -28,6 +28,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ This controller class handles the data flow and operations relating to the AddModifyController view defined
+ by AddModifyController.fxml.
+ */
+
 public class AddModifyAppointmentController implements Initializable {
     Stage stage;
     Parent scene;
@@ -100,7 +105,17 @@ public class AddModifyAppointmentController implements Initializable {
 
 
 
-
+    /**
+     This method is an event handler that either adds a new appointment or updates an existing appointment.
+     The static class boolean variable setToModify defines whether an appointment is being updated(setToModify = true)
+     or added(setToModify = false). This method also relies heavily on the LocalTime variables LocalOpenTime and LocalCloseTime.
+     These were created by first creating ZonedDateTime variables representing Eastern Time business hours for opening and closing.
+     These eastern specific times were subsequently converted to their equivalent Open and Close times in whatever the Local System time may be.
+     This method includes many checks to ensure appointment end times are not before start times, and that appointments do not overlap with existing appointments
+     in the system for the same Customer. The method also checks to ensure that all fields are filled in with the appropriate data. Alert boxes are triggered
+     directing the user to change input if any of these various checks fail.
+     @param event is an ActionEvent object that is created when the add/update appointment button is pressed.
+     */
     @FXML
     void onAddUpdate(ActionEvent event) {
         //Remember you need to check against eastern business hours, get Eastern start and end times and convert them to local time.
@@ -204,7 +219,7 @@ public class AddModifyAppointmentController implements Initializable {
 
 
 
-
+                setToModify = false;
                 success =  AppointmentQuery.updateAppointment(modAppointmentID, title, description, location, contactID, userID, customerID, type, appointmentStartTime, appointmentEndTime);
                 saveAlertTitle = "Appointment Updated!";
             }
@@ -232,15 +247,15 @@ public class AddModifyAppointmentController implements Initializable {
                 success = AppointmentQuery.addAppointment(title, description, location, contactID, userID, customerID, type, appointmentStartTime, appointmentEndTime);
                 saveAlertTitle = "New Appointment Added";
 
-                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(saveAlertTitle);
-                alert.setContentText(success);
-                alert.showAndWait();
+
 
             }
 
 
-
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(saveAlertTitle);
+                alert.setContentText(success);
+                alert.showAndWait();
                 stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
                 scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
                 stage.setScene(new Scene(scene));
@@ -270,7 +285,7 @@ public class AddModifyAppointmentController implements Initializable {
             missingInput.showAndWait();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
 
 
@@ -279,6 +294,13 @@ public class AddModifyAppointmentController implements Initializable {
 
     }
 
+
+    /**
+     This method sends the user back to the Main View when the cancel button is clicked.
+     It calls a method in main that confirms the user wants to leave the current view, and the user
+     must click OK to proceed.
+     @param  event listens for click of Cancel button.
+     */
     @FXML
     void onCancel(ActionEvent event) throws IOException {
       MainViewController mainViewController = new MainViewController();
@@ -289,7 +311,12 @@ public class AddModifyAppointmentController implements Initializable {
 
 
 
-
+    /**
+     This method is called in the MainView when an appointment is selected to be modified.
+     The method includes statements to populate the Update Appointment form with all relevant
+     data from the existing appointment.
+     @param appointment is the appointment passed from MainView that the user wishes to modify.
+     */
 
     public void modifyExistingAppointment(Appointment appointment) {
         
@@ -331,12 +358,24 @@ public class AddModifyAppointmentController implements Initializable {
 
     }
 
+    /**
+     This view includes combo boxes that allow the user to select start and end times for their appointment.
+     This method takes the localOpenTime (local equivalent of Eastern Opening Time) and localCloseTime(local equivalent of Eastern Closing Time)
+     values and generates a list of LocalTimes in 15 minute increments between Opening and closing time.
+     There are conditions that ensure the last possible appointment start time is 15 minutes before Eastern closing time,
+     and the first possible start time is right at Eastern opening time.
+    The first possible appointment end time is 15 minutes after Eastern opening time and the last possible end time is right at Eastern closing time. This method can be called to create the needed
+     time lists for both the start and end time combo boxes.
+     @param localOpenTime the user's local timezone version of Eastern timezone opening time
+     @param localCloseTime the user's local timezone version of Eastern timezone closing time
+     @return the list of times between open and close in 15 minute intervals.
+     */
     public static ObservableList<LocalTime> setAppointmentTimes(LocalTime localOpenTime, LocalTime localCloseTime) {
         /*This function can be used to create a list of appointment start times or appointment end times.
         When creating start times, simply pass the static localOpenTime variable created at the start of this class.
         Start times should end with enough time for a final appointment before the business hours end. With that in mind the while loop
         below has been written to increment until the last start time is 15 minutes before close.
-        To use this function to create end times, your parameters should be (localOpenTime.plusMinuteS(15), localCloseTime.plusMinutes(15);
+        To use this function to create end times, your parameters should be localOpenTime.plusMinuteS(15), localCloseTime.plusMinutes(15);
         This will ensure that the first end time will be 15 minutes after the first start time, and the last end time will be 15 minutes after the last end time.
          */
 
@@ -350,6 +389,11 @@ public class AddModifyAppointmentController implements Initializable {
         }
         return appointmentTimes;
     }
+
+    /**
+     This initialize method contains statements to set the combo boxes ranges of values so the
+     user can add/modify all appointment details.
+     */
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

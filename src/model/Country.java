@@ -2,6 +2,10 @@ package model;
 
 import java.time.LocalDateTime;
 
+/**
+ The Country Class is used to take country records from the countries database table and create Java objects within the program.
+ */
+
 public class Country {
     private int countryID;
     private String countryName;

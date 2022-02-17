@@ -13,9 +13,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ This class handles all queries related to objects of the User class and associated database records in the users table.
+ */
+
 public class UserQuery {
 
     private static ObservableList<User> users = FXCollections.observableArrayList();
+
+    /**
+     The getDBUsers method uses a PreparedStatement object to query the database, which then supplies a ResultSet object containing all records in the users table.
+     */
 
     public static ObservableList<User> getDBUsers() {
 

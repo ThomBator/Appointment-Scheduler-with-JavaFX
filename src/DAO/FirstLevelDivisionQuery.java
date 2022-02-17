@@ -6,10 +6,15 @@ import model.FirstLevelDivision;
 import model.User;
 
 import java.sql.*;
-
+/**
+ This class handles all queries related to objects of the FirstLevelDivision class and associated database records in the first_level_division table.
+ */
 public class FirstLevelDivisionQuery {
     public static ObservableList<FirstLevelDivision> firstLevelDivisions = FXCollections.observableArrayList();
 
+    /**
+     The getFirstLevelDivisions method uses a PreparedStatement object to query the database, which then supplies a ResultSet object containing all records in the first_level_divisions table.
+     */
     public static ObservableList<FirstLevelDivision> getFirstLevelDivisions() {
         if(firstLevelDivisions.isEmpty()) {
             try(Connection conn = DBConnection.getConnection()) {

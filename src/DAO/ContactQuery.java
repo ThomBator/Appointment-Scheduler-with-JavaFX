@@ -7,10 +7,16 @@ import model.User;
 
 import java.sql.*;
 import java.util.List;
-
+/**
+ This class handles all queries for Contact objects and their associated records in the contacts table of the database.
+ */
 public class ContactQuery {
     private static ObservableList<Contact> contacts = FXCollections.observableArrayList();
 
+    /**
+     The getDBContacts method uses a Prepared Statement object to execute an SQL select statement to the database.
+     Ths returns a Result Set, which is then iterated through to take each contact record and use the fields to create an object of the Contact class.
+     */
     public static ObservableList<Contact> getDBContacts() {
 
         if (contacts.isEmpty()) {

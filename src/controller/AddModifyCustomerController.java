@@ -15,13 +15,17 @@ import main.Main;
 import model.Country;
 import model.Customer;
 import model.FirstLevelDivision;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.InputMismatchException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+/**
+ This controller class handles the data flow and operations associated with the view defined by AddModifyCustomer.fxml.
+
+ */
 
 public class AddModifyCustomerController implements Initializable {
     Stage stage;
@@ -61,18 +65,29 @@ public class AddModifyCustomerController implements Initializable {
     @FXML
     private TextField streetCityAddressField;
 
+    /**
+     The onActionCancel method is an event handler that allows users to cancel adding or updating a customer and returning to the main view.
+     This method calls the returnToMain method in MainView, which allows for the same logic to handle cancellation in both the AddModifyCustomer and
+     AddModifyController views.
+     @param event listens for the cancel button to be clicked.
+     */
+
     @FXML
     void onActionCancel(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/view/mainView.fxml"));
-        loader.load();
-        MainViewController mainViewController = loader.getController();
+        MainViewController mainViewController = new MainViewController();
         mainViewController.returnToMain(event);
 
 
 
 
     }
+
+    /**
+     The onActionSave method is an event handler that saves a new customer or updates an existing customer. The static boolean setToModify
+     defines whether an update(setToModify = true) or add(setToModify = false) is to be performed. This method includes many statements to check
+     that all fields have been filed out appropriately. If all fields are filled out, the method will either call the DAO.CustomerQuery.addCustomer() or
+     DAO.CustomerQuery.updateCustomer(). These methods will respectively add a new record to the database or update a database record.
+     */
 
     @FXML
     void onActionSave(ActionEvent event) {
@@ -136,6 +151,14 @@ public class AddModifyCustomerController implements Initializable {
 
     }
 
+    /** LAMBDA USE: This method uses a lambda on a FilteredList to select first level divisions that
+     match the input Country's countryID. This approach requires less lines of logic than would be required to accomplish this same
+     outcome with conditional statements and a loop.
+     The setFirstLevel method creates a list of all First Level Divisions with a specific Country ID.
+     @param country the Country whose ID must match all First Level Division Country IDs.
+     @return the filtered list of First Level Divisions for the specified country.
+     */
+
     public static FilteredList<FirstLevelDivision> setFirstLevel(Country country) {
         FilteredList<FirstLevelDivision> countryDivisions =
                 DAO.FirstLevelDivisionQuery.getFirstLevelDivisions()
@@ -143,7 +166,11 @@ public class AddModifyCustomerController implements Initializable {
         return countryDivisions;
 
     }
-
+    /**
+     The onCountrySelected method is an event handler that sets the firstLevelComboBox with First Level Divisions
+     from the selected country.
+     @param event listens for a country to be selected from the countryComboBox
+     */
     @FXML
     void onCountrySelected(ActionEvent event) {
 
@@ -159,10 +186,12 @@ public class AddModifyCustomerController implements Initializable {
 
     }
 
-    @FXML
-    void onFirstLevelSelected(ActionEvent event) {
-
-    }
+    /**
+     The modifyExistingCustomer method is called from the Main View when an existed customer is selected from Main's customer table view.
+     This method takes the attributes of the selected customer and uses them to populate the update customer form with the customer's current data.
+     This method also sets the setToModify boolean to true, so that the onActionSave method knows to update an existing database record rather than add a new one.
+     @param customer is the customer to be modified.
+     */
 
     public void modifyExistingCustomer (Customer customer) {
         setToModify = true;
@@ -203,6 +232,10 @@ public class AddModifyCustomerController implements Initializable {
         }
     }
 
+    /**
+     This initialize method includes statements to populate the countryComboBox items and prompt text,
+     as well as the firstLevelComboBox prompt text.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
