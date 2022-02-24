@@ -97,7 +97,7 @@ public class LoginScreenController implements Initializable {
         try{
 
             if(usernameInput.getLength() == 0 || passwordInput.getLength() == 0) {
-               throw new RuntimeException();
+                throw new RuntimeException();
             }
             else {
                 boolean validInput = false;
@@ -108,7 +108,7 @@ public class LoginScreenController implements Initializable {
 
                     if(loginUser.getUserName().equals(usernameInput.getText()) && loginUser.getPassword().equals(passwordInput.getText())) {
                         currentUser = loginUser;
-                        updateLoginActivity(true);
+                        updateLoginActivity(true, usernameInput.getText());
                         validInput = true;
                         stage = (Stage)((Button)event.getSource()).getScene().getWindow();
                         scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
@@ -128,7 +128,8 @@ public class LoginScreenController implements Initializable {
                 MainViewController mainViewController = new MainViewController();
                 mainViewController.checkAppointmentTimes();
 
-                   if(!validInput) {
+                if(!validInput) {
+
                     throw new RuntimeException();
 
 
@@ -141,8 +142,9 @@ public class LoginScreenController implements Initializable {
 
         }
         catch(RuntimeException e) {
-
+            updateLoginActivity(false, usernameInput.getText());
             if(Locale.getDefault().getLanguage().equals("fr")) {
+
                 ResourceBundle frAlert = ResourceBundle.getBundle("controller/rb");
                 Alert inputAlert = new Alert(Alert.AlertType.ERROR);
                 inputAlert.setTitle(frAlert.getString("inputAlertTitle"));
@@ -151,12 +153,13 @@ public class LoginScreenController implements Initializable {
             }
 
             else {
+
                 Alert inputAlert = new Alert(Alert.AlertType.ERROR);
                 inputAlert.setTitle("Input missing!");
                 inputAlert.setContentText("Username or password was not entered or was invalid. Please enter a valid username and password.");
                 inputAlert.showAndWait();
             }
-            updateLoginActivity(false);
+
 
         }
 
@@ -174,13 +177,27 @@ public class LoginScreenController implements Initializable {
      login_activity.txt. The method prints details of the login attempt, time and whether the attempt was successful.
      @param wasSuccessful is passed from onSignIn as true if the login was successful, false if not.
      */
-    public static void updateLoginActivity(boolean wasSuccessful)  {
+    public static void updateLoginActivity(boolean wasSuccessful, String username)  {
 
         try( FileWriter logUpdate = new FileWriter("login_activity.txt", true);
              BufferedWriter logUpdateBuff = new BufferedWriter(logUpdate);
              PrintWriter logUpdatePW = new PrintWriter(logUpdateBuff)) {
             Timestamp loginAttempt = Timestamp.from(Instant.now());
-            String logEntry = "Login attempt at: "+ loginAttempt.toString() + "(UTC). Login Success: " + wasSuccessful;
+            String curID = "Invalid User";
+            if(wasSuccessful == true) {
+                curID = String.valueOf(currentUser.getUserID());
+
+            }
+            else{
+
+                for(User user : loginList) {
+                    if(username.equals(user.getUserName())) {
+                        curID = String.valueOf(user.getUserID());
+                    }
+                }
+
+            }
+            String logEntry = "Login attempt at: "+ loginAttempt.toString() + "(UTC). User ID:" + curID  + ". Login Success: " + wasSuccessful + ".";
             logUpdatePW.println(logEntry);
             System.out.println(logEntry);
 
@@ -220,7 +237,7 @@ public class LoginScreenController implements Initializable {
 
 
 
-            loginList = DAO.UserQuery.getDBUsers();
+        loginList = DAO.UserQuery.getDBUsers();
 
 
 

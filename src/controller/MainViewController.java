@@ -127,8 +127,7 @@ public class MainViewController implements Initializable {
     private RadioButton weekRadio;
 
 
-    /**
-     This event handler method redirects the user to the Add Appointment view defined by AddModifyAppointment.fxml
+    /**This event handler method redirects the user to the Add Appointment view defined by AddModifyAppointment.fxml
      when the Add Appointment button is clicked.
      @param event listens for the Add Appointment button to be clicked.
      */
@@ -141,8 +140,8 @@ public class MainViewController implements Initializable {
 
 
     }
-    /**
-     This event handler method redirects the user to the Add Customer view defined by AddModifyCustomer.fxml, when the Add Customer button is clicked.
+
+    /**This event handler method redirects the user to the Add Customer view defined by AddModifyCustomer.fxml, when the Add Customer button is clicked.
      @param event listens for the Add Customer button to be clicked.
      */
     @FXML
@@ -155,8 +154,8 @@ public class MainViewController implements Initializable {
     }
 
 
-    /**
-     This event handler method deletes the appointment that has been selected by the user in the appointment table view.
+
+    /**This event handler method deletes the appointment that has been selected by the user in the appointment table view.
      If no appointment is selected, an exception is thrown. This triggers an alert prompting the user to select an appointment
      before clicking delete.
      @param event listens for Delete Appointment button to be clicked.
@@ -164,7 +163,9 @@ public class MainViewController implements Initializable {
     @FXML
     void onDeleteAppointment(ActionEvent event) {
         try {
-            int appointmentID = appointmentTable.getSelectionModel().getSelectedItem().getAppointmentID();
+            Appointment cancelledAppointment = appointmentTable.getSelectionModel().getSelectedItem();
+            String cancelledAppointmentType = cancelledAppointment.getType();
+            int appointmentID = cancelledAppointment.getAppointmentID();
             if(appointmentTable.getSelectionModel().getSelectedItem() == null) {
                 throw new RuntimeException();
             }
@@ -175,10 +176,11 @@ public class MainViewController implements Initializable {
 
             if(result.isPresent() && result.get() == ButtonType.OK) {
                 AppointmentQuery.deleteAppointment(appointmentID);
+                String cancelMessage = "An appointment with Appointment ID: " + appointmentID +" and type: " + cancelledAppointmentType;
 
                 Alert deleteSuccess = new Alert(Alert.AlertType.INFORMATION);
-                deleteSuccess.setTitle("Appointment Deleted");
-                deleteSuccess.setContentText("Appointment Deleted Successfully");
+                deleteSuccess.setTitle("Appointment Cancelled");
+                deleteSuccess.setContentText(cancelMessage);
                 deleteSuccess.showAndWait();
                 appointmentsList = AppointmentQuery.getAppointments();
                 appointmentTable.setItems(appointmentsList);
@@ -186,11 +188,11 @@ public class MainViewController implements Initializable {
 
         }
         catch(RuntimeException e) {
-                Alert noSelection = new Alert(Alert.AlertType.ERROR);
-                noSelection.setTitle("No appointment selected");
-                noSelection.setContentText("Please select an appointment from the Appointment Table before clicking delete.");
-                noSelection.showAndWait();
-            }
+            Alert noSelection = new Alert(Alert.AlertType.ERROR);
+            noSelection.setTitle("No appointment selected");
+            noSelection.setContentText("Please select an appointment from the Appointment Table before clicking delete.");
+            noSelection.showAndWait();
+        }
 
 
 
@@ -198,61 +200,56 @@ public class MainViewController implements Initializable {
 
     }
 
-    /**
-     This event handler method deletes the Customer that has been selected by the user in the customer table view.
+    /**This event handler method deletes the Customer that has been selected by the user in the customer table view.
      The method will also delete any appointments associated with that customer.
      If no customer is selected, an exception is thrown. This triggers an alert prompting the user to select a customer
      before clicking delete.
      @param event listens for Delete Customer button to be clicked.
      */
-
     @FXML
     void onDeleteCustomer(ActionEvent event) {
 
-            try {
+        try {
 
-                Customer customerToDelete = customerTable.getSelectionModel().getSelectedItem();
-                if(customerToDelete == null) {
-                    throw new RuntimeException();
-                }
+            Customer customerToDelete = customerTable.getSelectionModel().getSelectedItem();
+            if(customerToDelete == null) {
+                throw new RuntimeException();
+            }
 
-                Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmDelete.setTitle("Confirm Delete Customer");
-                confirmDelete.setContentText("Deleted customers cannot be recovered. Any appointments for this customer will also be deleted. Click OK to proceed with deletion");
-                Optional<ButtonType> result = confirmDelete.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
-                    for(Appointment customerAppointment : appointmentsList) {
-                        if (customerAppointment.getCustomerID() == customerToDelete.getCustomerID()) {
-                            AppointmentQuery.deleteAppointment(customerAppointment.getAppointmentID());
+            Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmDelete.setTitle("Confirm Delete Customer");
+            confirmDelete.setContentText("Deleted customers cannot be recovered. Any appointments for this customer will also be deleted. Click OK to proceed with deletion.");
+            Optional<ButtonType> result = confirmDelete.showAndWait();
+            if(result.isPresent() && result.get() == ButtonType.OK) {
+                for(Appointment customerAppointment : appointmentsList) {
+                    if (customerAppointment.getCustomerID() == customerToDelete.getCustomerID()) {
+                        AppointmentQuery.deleteAppointment(customerAppointment.getAppointmentID());
 
-                        }
                     }
-                    CustomerQuery.deleteCustomer(customerToDelete.getCustomerID());
-                    appointmentTable.setItems(AppointmentQuery.getAppointments());
-                    customerTable.setItems(CustomerQuery.getCustomers());
-                    Alert customerDeleted = new Alert(Alert.AlertType.INFORMATION);
-                    customerDeleted.setTitle("Customer deleted successfully");
-                    customerDeleted.setContentText("The selected customer has been deleted.");
                 }
-
-
-
+                CustomerQuery.deleteCustomer(customerToDelete.getCustomerID());
+                appointmentTable.setItems(AppointmentQuery.getAppointments());
+                customerTable.setItems(CustomerQuery.getCustomers());
+                Alert customerDeleted = new Alert(Alert.AlertType.INFORMATION);
+                customerDeleted.setTitle("Customer deleted successfully");
+                customerDeleted.setContentText("The selected customer has been deleted.");
             }
 
-            catch(RuntimeException e) {
-                Alert noSelection = new Alert(Alert.AlertType.ERROR);
-                noSelection.setTitle("No customer selected");
-                noSelection.setContentText("Please select a customer from the Customer Table before clicking delete.");
-                noSelection.showAndWait();
-            }
+
+
         }
 
+        catch(RuntimeException e) {
+            Alert noSelection = new Alert(Alert.AlertType.ERROR);
+            noSelection.setTitle("No customer selected");
+            noSelection.setContentText("Please select a customer from the Customer Table before clicking delete.");
+            noSelection.showAndWait();
+        }
+    }
 
 
 
-
-    /**
-     This method populates the Appointment Table view with all appointments in the database when clicked.
+    /**This method populates the Appointment Table view with all appointments in the database when clicked.
      @param event listens for the All radio button to be toggled.
      */
     @FXML
@@ -265,8 +262,7 @@ public class MainViewController implements Initializable {
 
 
     }
-    /**
-     This method redirects users to the Reports view defined by Reports.fxml.
+    /**This method redirects users to the Reports view defined by Reports.fxml.
      @param event listen for click of reports button.
      */
     @FXML
@@ -278,8 +274,8 @@ public class MainViewController implements Initializable {
 
     }
 
-    /**
-     This method allows users to exit the program.
+
+    /**This method allows users to exit the program.
      @param event listens for click of the exit button.
      */
     @FXML
@@ -301,12 +297,11 @@ public class MainViewController implements Initializable {
         FilteredList<Appointment> appointmentsThisMonth = appointmentsList.filtered(a -> a.getStart().getMonth() == currentMonth);
         appointmentTable.setItems(appointmentsThisMonth);
 
-        }
+    }
 
 
 
-    /**
-     * LAMBDA USE: This method uses a lambda expression on a FilteredList to return a filtered list of Appointments
+    /**LAMBDA USE: This method uses a lambda expression on a FilteredList to return a filtered list of Appointments
      that occur within the following week of the current day. This approach requires fewer lines of code than would be required
      to achieve the same result with a loop and conditional statements.
      This method populates the Appointment Table with all appointments scheduled within 1 week of the current day.
@@ -314,51 +309,50 @@ public class MainViewController implements Initializable {
      */
     @FXML
     void onSelectWeekRadio(ActionEvent event) {
-    FilteredList<Appointment> appointmentsThisWeek = appointmentsList.filtered(a -> ChronoUnit.DAYS.between(a.getStart(), currentLocalDateTime) >= 0 && ChronoUnit.DAYS.between(a.getStart(), currentLocalDateTime) <= 7);
-    appointmentTable.setItems(appointmentsThisWeek);
+        FilteredList<Appointment> appointmentsThisWeek = appointmentsList.filtered(a -> ChronoUnit.DAYS.between(a.getStart(), currentLocalDateTime) >= 0 && ChronoUnit.DAYS.between(a.getStart(), currentLocalDateTime) <= 7);
+        appointmentTable.setItems(appointmentsThisWeek);
 
     }
-    /**
-     This method redirects users to the Update Appointment view defined by AddModifyAppointment.fxml.
+
+    /**This method redirects users to the Update Appointment view defined by AddModifyAppointment.fxml.
      @param event listens for click of the Update Appointment button.
      */
     @FXML
     void onUpdateAppointment(ActionEvent event) {
         try {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/view/AddModifyAppointment.fxml"));
-        loader.load();
-        AddModifyAppointmentController addModifyAppointmentController = loader.getController();
-        Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
-        addModifyAppointmentController.modifyExistingAppointment(appointment);
-        stage = (Stage)((Button)event.getSource()).getScene().getWindow();
-        scene = loader.getRoot();
-        stage.setScene(new Scene(scene));
-        stage.show();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/AddModifyAppointment.fxml"));
+            loader.load();
+            AddModifyAppointmentController addModifyAppointmentController = loader.getController();
+            Appointment appointment = appointmentTable.getSelectionModel().getSelectedItem();
+            addModifyAppointmentController.modifyExistingAppointment(appointment);
+            stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            stage.setScene(new Scene(scene));
+            stage.show();
         }
 
 
-    catch(RuntimeException e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("No Appointment Selected");
-        alert.setContentText("You must select an appointment from the appointment table to update an appointment record.");
-        alert.showAndWait();
-        e.printStackTrace();
+        catch(RuntimeException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("No Appointment Selected");
+            alert.setContentText("You must select an appointment from the appointment table to update an appointment record.");
+            alert.showAndWait();
+            e.printStackTrace();
+
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
 
     }
-    catch (IOException e) {
-        e.printStackTrace();
-
-    }
 
 
-    }
-
-    /**
-     This method redirects users to the Update Appointment view defined by AddModifyCustomer.fxml.
+    /**This method redirects users to the Update Appointment view defined by AddModifyCustomer.fxml.
      @param event listens for click of the Update Customer button.
      */
-
     @FXML
     void onUpdateCustomer(ActionEvent event) {
         try {
@@ -388,10 +382,8 @@ public class MainViewController implements Initializable {
 
     }
 
-    /**
-     This method was created to reduce code-repetition in the AddModifyCustomer viewsand AddModifyAppointment views. It can be called
+    /**This method was created to reduce code-repetition in the AddModifyCustomer viewsand AddModifyAppointment views. It can be called
      from those methods to return a user to the main view. This method also provides a generic warning that the user will lose any unsaved input if they cancel and return to main view.
-
      */
     public void returnToMain(ActionEvent event) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -411,8 +403,7 @@ public class MainViewController implements Initializable {
     }
 
 
-    /**
-     This method is called on login to check if there are any appointments scheduled within 15 minutes of login tinme.
+    /**This method is called on login to check if there are any appointments scheduled within 15 minutes of login time.
      */
     public static void checkAppointmentTimes() {
         Long timeUntilAppointment;
@@ -422,19 +413,13 @@ public class MainViewController implements Initializable {
                 //Do we need to find appointments that are currently going but ending within 15 minutes?
                 LocalTime appointmentStart = appointmentCheck.getStart().toLocalTime();
                 timeUntilAppointment = ChronoUnit.MINUTES.between(timeAtLogin, appointmentStart);
-                long timeUntilAppointmentPositive = Math.abs(timeUntilAppointment);
 
 
-                if(timeUntilAppointmentPositive <= 15) {
-                    String appointmentDetails = "Appointment details: " + appointmentCheck.toString();
-                    appointmentProximityAlert = "You have an appointment that begins in approximately " + timeUntilAppointmentPositive + " minutes."
+
+                if(timeUntilAppointment <= 15 && timeUntilAppointment >= 0) {
+                    String appointmentDetails = " Appointment details: " + appointmentCheck.toString();
+                    appointmentProximityAlert = "You have an appointment that begins in approximately " + timeUntilAppointment + " minutes."
                             + appointmentDetails;
-                    if(timeUntilAppointment < 0) {
-                        appointmentProximityAlert = "You have an appointment that started approximately " + timeUntilAppointmentPositive + " minutes ago. "
-                                + appointmentDetails;
-                    }
-
-
 
                 }
             }
@@ -447,6 +432,7 @@ public class MainViewController implements Initializable {
         appointmentAlert.showAndWait();
 
     }
+
     /**
      This initialize method populates the Customer Table and the Appointment Table with all current customers and appointments in the database.*/
     @Override

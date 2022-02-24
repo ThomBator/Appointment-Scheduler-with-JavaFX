@@ -121,8 +121,10 @@ public class AddModifyAppointmentController implements Initializable {
         //Remember you need to check against eastern business hours, get Eastern start and end times and convert them to local time.
         try{
 
-            //This section of the function extracts data from the form. If a field is empty, a runtime exception is thrown.
-            //isBlank() is better than isEmpty()
+            /*I think some appointment overlaps were being allowed becuase the allAppointments list was not being updated to the most
+            recent version on every add update. I hope by resetting the list at the start of the event handler I will resolve this bug.
+            */
+            allAppointments = AppointmentQuery.getAppointments();
             String title = titleField.getText();
             if(title.isBlank()) throw new RuntimeException(invalidInputMessage);
             String description = descriptionField.getText();
@@ -252,14 +254,14 @@ public class AddModifyAppointmentController implements Initializable {
             }
 
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(saveAlertTitle);
-                alert.setContentText(success);
-                alert.showAndWait();
-                stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-                scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
-                stage.setScene(new Scene(scene));
-                stage.show();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(saveAlertTitle);
+            alert.setContentText(success);
+            alert.showAndWait();
+            stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            scene = FXMLLoader.load(getClass().getResource("/view/mainView.fxml"));
+            stage.setScene(new Scene(scene));
+            stage.show();
 
 
 
@@ -303,8 +305,8 @@ public class AddModifyAppointmentController implements Initializable {
      */
     @FXML
     void onCancel(ActionEvent event) throws IOException {
-      MainViewController mainViewController = new MainViewController();
-      mainViewController.returnToMain(event);
+        MainViewController mainViewController = new MainViewController();
+        mainViewController.returnToMain(event);
 
 
     }
@@ -319,7 +321,7 @@ public class AddModifyAppointmentController implements Initializable {
      */
 
     public void modifyExistingAppointment(Appointment appointment) {
-        
+
         setToModify = true;
         addModifyTitle.setText("Update Appointment");
         onAddUpdateButtonText.setText("Update");
@@ -337,6 +339,7 @@ public class AddModifyAppointmentController implements Initializable {
         appointmentDatePicker.setValue(appointmentDate);
         startTimeCombo.setValue(appointmentStart);
         endTimeCombo.setValue(appointmentEnd);
+
 
         for(Contact contact : contacts) {
             if(appointment.getContactID() == contact.getContactID()) {
@@ -364,7 +367,7 @@ public class AddModifyAppointmentController implements Initializable {
      values and generates a list of LocalTimes in 15 minute increments between Opening and closing time.
      There are conditions that ensure the last possible appointment start time is 15 minutes before Eastern closing time,
      and the first possible start time is right at Eastern opening time.
-    The first possible appointment end time is 15 minutes after Eastern opening time and the last possible end time is right at Eastern closing time. This method can be called to create the needed
+     The first possible appointment end time is 15 minutes after Eastern opening time and the last possible end time is right at Eastern closing time. This method can be called to create the needed
      time lists for both the start and end time combo boxes.
      @param localOpenTime the user's local timezone version of Eastern timezone opening time
      @param localCloseTime the user's local timezone version of Eastern timezone closing time
@@ -384,7 +387,7 @@ public class AddModifyAppointmentController implements Initializable {
         appointmentTimes.add(localOpenTime);
         while(nextTime.isBefore(localCloseTime.minusMinutes(15))) {
             nextTime = nextTime.plusMinutes(15);
-           appointmentTimes.add(nextTime);
+            appointmentTimes.add(nextTime);
 
         }
         return appointmentTimes;
