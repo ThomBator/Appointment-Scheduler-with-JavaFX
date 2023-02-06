@@ -7,11 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 /**
  This is the Main Class for this Appointment Scheduler application.
- The primary function of this class is to set the initial Stage, Scene and Root node for the JavaFX Graphical User Interface applications.
- Created By: Thomas Bator
- Student ID: #001465097
- For: C195 Software II at Western Governors University
- Course Instructor: Juan Ruiz
 
  */
 

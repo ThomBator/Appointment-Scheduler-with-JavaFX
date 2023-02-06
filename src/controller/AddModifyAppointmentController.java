@@ -150,7 +150,7 @@ public class AddModifyAppointmentController implements Initializable {
 
 
 
-            //Improvements: Make specific messages for each
+
             //The success string will be used to print a custom message in the alert that notifies the user that an update or addition has been successfully completed.
             String success;
             String saveAlertTitle;
@@ -158,7 +158,7 @@ public class AddModifyAppointmentController implements Initializable {
             //Time Check logic starts here.
 
             //This condition checks that all new appointments are in the future
-            //Maybe leave this one off for testers
+           s
 
             //This condition checks to make sure the end time isn't before the start time
             if(appointmentEndTime.isBefore(appointmentStartTime)) {

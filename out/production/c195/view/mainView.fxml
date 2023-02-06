@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainViewController">
+   <children>
+      <VBox prefHeight="601.0" prefWidth="1200.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="600.0">
+               <children>
+                  <Label prefHeight="27.0" prefWidth="327.0" text="Appointment Management System">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="5.0" prefWidth="1200.0">
+               <children>
+                  <Label prefHeight="12.0" prefWidth="160.0" text="Current Customer List: ">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="200.0" prefWidth="1200.0">
+               <children>
+                  <TableView fx:id="customerTable" prefHeight="200.0" prefWidth="850.0">
+                    <columns>
+                      <TableColumn fx:id="custIDCol" minWidth="5.0" prefWidth="39.0" text="ID" />
+                      <TableColumn fx:id="custNameCol" prefWidth="124.0" text="Name" />
+                        <TableColumn fx:id="custAddressCol" prefWidth="152.0" text="Address" />
+                        <TableColumn fx:id="custPostCol" prefWidth="104.0" text="Post Code" />
+                        <TableColumn fx:id="custPhoneCol" prefWidth="134.0" text="Phone" />
+                        <TableColumn fx:id="custCountryNameCol" minWidth="0.0" prefWidth="137.0" text="Country" />
+                        <TableColumn fx:id="custDivCol" minWidth="7.0" prefWidth="109.0" text="Division" />
+                    </columns>
+                  </TableView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="72.0" prefWidth="1200.0" spacing="20.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onAddNewCustomer" prefHeight="25.0" prefWidth="139.0" text="Add New Customer" />
+                  <Button mnemonicParsing="false" onAction="#onUpdateCustomer" prefHeight="25.0" prefWidth="140.0" text="Update Customer" />
+                  <Button mnemonicParsing="false" onAction="#onDeleteCustomer" prefHeight="25.0" prefWidth="140.0" text="Delete Customer" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="37.0" prefWidth="1136.0">
+               <children>
+                  <Label prefHeight="30.0" prefWidth="163.0" text="Current Appointments: ">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" />
+                     </padding>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets left="5.0" right="5.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="200.0" prefWidth="1200.0">
+               <children>
+                  <TableView fx:id="appointmentTable" prefHeight="200.0" prefWidth="850.0">
+                    <columns>
+                      <TableColumn fx:id="aptAptIDCol" prefWidth="56.0" text="Apt. ID" />
+                      <TableColumn fx:id="aptTitleCol" minWidth="0.0" prefWidth="68.0" text="Title" />
+                        <TableColumn fx:id="aptDescriptionCol" prefWidth="74.0" text="Description" />
+                        <TableColumn fx:id="aptLocationCol" prefWidth="66.0" text="Location" />
+                        <TableColumn fx:id="aptContactCol" minWidth="0.0" prefWidth="85.0" text="Contact" />
+                        <TableColumn fx:id="aptTypeCol" minWidth="0.0" prefWidth="86.0" text="Type" />
+                        <TableColumn fx:id="aptStartCol" prefWidth="102.0" text="Start" />
+                        <TableColumn fx:id="aptEndCol" minWidth="7.0" prefWidth="122.0" text="End" />
+                        <TableColumn fx:id="aptCustIDCol" text="Cust. ID" />
+                        <TableColumn fx:id="aptUserIDCol" prefWidth="61.0" text="User ID" />
+                    </columns>
+                  </TableView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="600.0" spacing="5.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="230.0" text="Toggle to View Current Week or Month:">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <RadioButton fx:id="weekRadio" mnemonicParsing="false" onAction="#onSelectWeekRadio" text="Week">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="viewOptionsToggleGroup" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="montRadio" mnemonicParsing="false" onAction="#onSelectMonthRadio" text="Month" toggleGroup="$viewOptionsToggleGroup" />
+                  <RadioButton fx:id="allRadio" mnemonicParsing="false" onAction="#onSelectAllRadio" selected="true" text="All" toggleGroup="$viewOptionsToggleGroup" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="75.0" prefWidth="600.0" spacing="8.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onAddNewAppointment" prefHeight="25.0" prefWidth="141.0" text="Add New Appointment" />
+                  <Button mnemonicParsing="false" onAction="#onUpdateAppointment" prefHeight="25.0" prefWidth="140.0" text="Update Appointment" />
+                  <Button mnemonicParsing="false" onAction="#onDeleteAppointment" prefHeight="25.0" prefWidth="141.0" text="Delete Appointment" />
+                  <Button mnemonicParsing="false" onAction="#onSelectAppointmentReport" prefHeight="25.0" prefWidth="139.0" text="Reports" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="58.0" prefWidth="1199.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onSelectExit" text="Exit Program" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
